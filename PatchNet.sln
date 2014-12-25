@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PatchNet", "PatchNet\PatchNet.vcxproj", "{BC3A9DDB-6EE4-4B17-9579-A64343D162D4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BC3A9DDB-6EE4-4B17-9579-A64343D162D4}.Debug|Win32.ActiveCfg = Debug|Win32
+		{BC3A9DDB-6EE4-4B17-9579-A64343D162D4}.Debug|Win32.Build.0 = Debug|Win32
+		{BC3A9DDB-6EE4-4B17-9579-A64343D162D4}.Release|Win32.ActiveCfg = Release|Win32
+		{BC3A9DDB-6EE4-4B17-9579-A64343D162D4}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
