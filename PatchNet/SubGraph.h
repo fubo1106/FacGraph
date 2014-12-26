@@ -12,7 +12,7 @@ private:
 
 public:
 
-	void drawSubGraph(Mat& src,Scalar nclolor1, Scalar ncolor2, Scalar ecolor);
+	void drawSubGraph(Mat& src);
 
 	SubGraph(void);
 	~SubGraph(void);

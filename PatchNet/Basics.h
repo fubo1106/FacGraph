@@ -29,3 +29,5 @@ using namespace std;
 Point calcCenterPoint(vector<Point>& points);
 
 int calcAvgGray(vector<Point>& contour, Mat& grayImg);
+
+Scalar randColor();

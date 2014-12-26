@@ -211,8 +211,15 @@ int main(){
 	FacBuilder builder;
 	//builder.getNodesFromImg(src,region);
 	builder.buildGraph(src,region);
-	builder.buildSubGraph(builder._facGraph._nodes[0],builder._facGraph);
+
+	FacGraph facG= builder._facGraph;
+
+	for(int i=0;i<facG._nodes.size();i++){
+		
+		builder.buildSubGraph(facG._nodes[i],facG);
 	//builder._facGraph.drawGraph(src,Scalar(0,255,0),Scalar(255,0,0),Scalar(0,0,255));
-	builder._subGraph.drawSubGraph(src,Scalar(0,255,0),Scalar(255,0,0),Scalar(0,0,255));
+		builder._subGraph.drawSubGraph(src.clone());
+		builder.~FacBuilder();
+	}
 	return 0;
 }

@@ -16,3 +16,11 @@ int calcAvgGray(vector<Point>& contour, Mat& grayImg){
 	}
 	return sumGray/contour.size();
 }
+
+Scalar randColor(){
+	int x=0,y=255;
+	int b = x+rand()%(y-x+1);
+	int g = x+rand()%(y-x+1);
+	int r = x+rand()%(y-x+1);
+	return Vec3b(b,g,r);
+}

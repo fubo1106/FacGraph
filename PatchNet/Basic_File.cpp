@@ -97,3 +97,17 @@ int Basic_File::LoadData(string fileName, cv::Mat& matData, int matRows, int mat
 	return (1);
 }
 
+void readMat2LabelFile(Mat& src, string file){
+	ofstream out(file,ios::out);
+
+	int d0,d1,d2,d3,d4,d5,d6;
+	int mark[6];
+	int thresh = 10;
+
+	for(int i=0;i<src.rows;i++)
+		for(int j=0;j<src.cols;j++){
+		
+		}
+
+	out.close();
+}

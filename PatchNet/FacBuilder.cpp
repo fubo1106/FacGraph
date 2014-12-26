@@ -8,6 +8,8 @@ FacBuilder::FacBuilder(void)
 
 FacBuilder::~FacBuilder(void)
 {
+	_facGraph.~FacGraph();
+	_subGraph.~SubGraph();
 }
 
 FacBuilder::FacBuilder(FacGraph g){
@@ -26,15 +28,25 @@ void FacBuilder::buildGraph(Mat& img, Mat& region){
 	_facGraph._nodes = nodes;
 	_facGraph._edges = edges;
 
+	//check nodes
+	//Mat show = Mat::zeros(region.rows,region.cols,CV_8UC3);
+	//for(int i=0;i<nodes.size();i++){
+	//	//Mat result = show.clone();
+	//	
+	//	nodes[i].drawNode(nodes[i],show,randColor());
+	//
+	//	namedWindow("region",0);imshow("region",show);waitKey(0);
+	//}
+
 	//check the nodes pair...
 	/*Mat show = Mat::zeros(region.rows,region.cols,CV_8UC3);
 	for(int i=0;i<edges.size();i++){
 		Mat result = show.clone();
-		FacNode* n1 = edges[i].node1;
-		FacNode* n2 = edges[i].node2;
+		FacNode n1 = edges[i]._node1;
+		FacNode n2 = edges[i]._node2;
 
-		n1->drawNode(*n1,result,Scalar(0,255,0));
-		n1->drawNode(*n2,result,Scalar(0,0,255));
+		n1.drawNode(n1,result,Scalar(0,255,0));
+		n1.drawNode(n2,result,Scalar(0,0,255));
 		namedWindow("region",0);imshow("region",result);waitKey(0);
 	}*/
 
@@ -107,8 +119,12 @@ vector<FacNode> FacBuilder::getNodesFromImg(Mat& img, Mat& region){
 						}						
 					
 				}//end while(!q.empty())
-
-				nodes.push_back(node);
+				
+				//area of this node to choosÉ¾µôÏ¸³¤  areaÐ¡µÄ
+				//if( contourArea(node._contour) > 50 && boundingRect(node._contour).height > 5 && boundingRect(node._contour).width > 5){
+					nodes.push_back(node);
+				//	id++;
+				//}
 				node._contour.clear();	 
 			}
 		}

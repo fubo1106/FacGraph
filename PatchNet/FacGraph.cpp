@@ -8,6 +8,8 @@ FacGraph::FacGraph(void)
 
 FacGraph::~FacGraph(void)
 {
+	_nodes.clear();
+	_edges.clear();
 }
 
 void FacGraph::drawGraph(Mat& src, Scalar ncolor1,Scalar ncolor2, Scalar ecolor){

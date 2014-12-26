@@ -17,7 +17,10 @@ public:
 
 	//void showFacNode(FacNode& node, Mat& src, Scalar scl);
 
+	void readMat2LabelFile(Mat& src, string file);
+
 	Basic_File(void);
 	~Basic_File(void);
 };
+
 
