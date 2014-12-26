@@ -39,6 +39,8 @@ void FacNode::compAttributes(Mat& src){
 	}
 	_avggray = calcAvgGray(_contour,gray);
 
+	_offsetX = _position.x/_srcImg.rows;//check x y row col's correspondence
+	_offsetY = _position.y/_srcImg.cols;
 
 }
 

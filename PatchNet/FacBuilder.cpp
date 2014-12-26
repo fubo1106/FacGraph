@@ -84,7 +84,7 @@ vector<FacNode> FacBuilder::getNodesFromImg(Mat& img, Mat& region){
 			if(!marked[i][j]){
 				marked[i][j] = 1;
 				q.push(Point(i,j));
-				node._ID = id++;
+				node._ID = id;
 				label = region.at<int>(i,j);
 				node._cluster = label;//类别
 				node._contour.push_back( Point(i,j) );
@@ -120,11 +120,12 @@ vector<FacNode> FacBuilder::getNodesFromImg(Mat& img, Mat& region){
 					
 				}//end while(!q.empty())
 				
-				//area of this node to choos删掉细长  area小的
-				//if( contourArea(node._contour) > 50 && boundingRect(node._contour).height > 5 && boundingRect(node._contour).width > 5){
+				//area of this node to choos删掉细长  area小的:会出问题  用contour的像素点
+				//cout<<"area:"<<contourArea(node._contour)<<"  boundRect:"<<boundingRect(node._contour).height<<"  "<<boundingRect(node._contour).width<<endl;
+				if( node._contour.size() > 100 && boundingRect(node._contour).height > 5 && boundingRect(node._contour).width > 5){
 					nodes.push_back(node);
-				//	id++;
-				//}
+					id++;
+				}
 				node._contour.clear();	 
 			}
 		}

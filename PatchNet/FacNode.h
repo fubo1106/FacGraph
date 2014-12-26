@@ -16,6 +16,8 @@ public:
 	int _avggray;
 	int _depth;
 
+	double _offsetX,_offsetY;//x y方向的偏移比例
+
 	Mat _srcImg;
 
 	vector<Point> _contour;

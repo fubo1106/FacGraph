@@ -2,6 +2,7 @@
 #include "FacBuilder.h"
 #include "Basic_File.h"
 #include "Basics.h"
+#include "GraphMatching.h"
 
 int main(){
 	//string imgA_path = "facades\\";
@@ -205,9 +206,9 @@ int main(){
 
 //end explore	
 	Basic_File fileop;
-	Mat src = imread("1.jpg");
+	Mat src = imread("img-8.png");
 	Mat region;
-	int flag = fileop.LoadData("1.txt",region,src.rows,src.cols);
+	int flag = fileop.LoadData("8.txt",region,src.rows,src.cols);
 	FacBuilder builder;
 	//builder.getNodesFromImg(src,region);
 	builder.buildGraph(src,region);
@@ -217,9 +218,11 @@ int main(){
 	for(int i=0;i<facG._nodes.size();i++){
 		
 		builder.buildSubGraph(facG._nodes[i],facG);
-	//builder._facGraph.drawGraph(src,Scalar(0,255,0),Scalar(255,0,0),Scalar(0,0,255));
-		builder._subGraph.drawSubGraph(src.clone());
+		//builder._facGraph.drawGraph(src,Scalar(0,255,0),Scalar(255,0,0),Scalar(0,0,255));
+		//builder._subGraph.drawSubGraph(src.clone());
 		builder.~FacBuilder();
 	}
+	GraphMatching gMatch;
+	double distance = gMatch.disOfTwoNodes(facG._nodes[0],facG._nodes[2]);
 	return 0;
 }
