@@ -22,7 +22,7 @@ bool lessThan(FacEdge& e1,FacEdge& e2){
 	return acos(calcAngleOf2Vec(v1,Point(1,0))) < acos(calcAngleOf2Vec(v2,Point(1,0)));
 }
 
-void SubGraph::drawSubGraph(Mat& src){
+void SubGraph::drawSubGraph(Mat& src,string title){
 	Mat show = src.clone();
 	for(int i=0;i<_edges.size();i++){
 		_node.drawNode(_edges[i]._node1,show,Scalar(255,0,0));
@@ -32,7 +32,7 @@ void SubGraph::drawSubGraph(Mat& src){
 	}
 	for(int i=0;i<_edges.size();i++){
 		_edge.drawEdge(_edges[i],show,Scalar(0,0,255));
-		namedWindow("graph",0);imshow("graph",show);waitKey(0);
+		namedWindow(title,0);imshow(title,show);waitKey(0);
 	}
 	
 }

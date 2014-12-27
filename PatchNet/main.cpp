@@ -5,6 +5,8 @@
 #include "GraphMatching.h"
 #include "DP.h"
 
+
+
 int main(){
 	//string imgA_path = "facades\\";
 //	const string imgA_path = "D:\\Patch\\Data\\1.jpg";
@@ -207,27 +209,43 @@ int main(){
 
 //end explore	
 	Basic_File fileop;
-	Mat src = imread("img-8.png");
+	Mat src = imread("1.jpg");
 	Mat region;
-	int flag = fileop.LoadData("8.txt",region,src.rows,src.cols);
+	int flag = fileop.LoadData("1.txt",region,src.rows,src.cols);
+
 	FacBuilder builder;
+	GraphMatching gMatch;
+
 	//builder.getNodesFromImg(src,region);
 	builder.buildGraph(src,region);
 
 	FacGraph facG= builder._facGraph;
 
-	for(int i=0;i<facG._nodes.size();i++){
-		
-		builder.buildSubGraph(facG._nodes[i],facG);
-		//builder._facGraph.drawGraph(src,Scalar(0,255,0),Scalar(255,0,0),Scalar(0,0,255));
-		//builder._subGraph.drawSubGraph(src.clone());
-		builder.~FacBuilder();
-	}
-	GraphMatching gMatch;
+	builder.buildAllSubGraphes(facG);
+	
+	SubGraph sub1,sub2;
+	for(int i=0;i<builder._allSubGraphes.size();i++)
+		for(int j=0;j<builder._allSubGraphes.size();j++){
+			sub1 = builder._allSubGraphes[i];
+			sub2 = builder._allSubGraphes[j];
+			builder._allSubGraphes[i].drawSubGraph(src.clone(),"sub#1");
+			builder._allSubGraphes[j].drawSubGraph(src.clone(),"sub#2");
+			gMatch.initMatching(sub1,sub2);
+			gMatch.oneSubGraphMatching(sub1,sub2);
+			cout<<"\nmatchScore:"<<gMatch._oneMatch.matchScore<<endl;
+		}
+	//for(int i=0;i<facG._nodes.size();i++){
+	//	
+	//	builder.buildSubGraph(facG._nodes[i],facG);
+	//	//builder._facGraph.drawGraph(src,Scalar(0,255,0),Scalar(255,0,0),Scalar(0,0,255));
+	//	//builder._subGraph.drawSubGraph(src.clone());
+	//	builder.~FacBuilder();
+	//}
+	
 	double distance = gMatch.disOfTwoNodes(facG._nodes[0],facG._nodes[2]);
 
-	DP dp;
-	dp.performDP();
+	/*DP dp;
+	dp.performDP();*/
 
 	return 0;
 }

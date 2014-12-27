@@ -22,15 +22,18 @@ public:
 	int _threK;//candidate num
 
 	SubGraph _target;
+	SubGraph _candidate;
 	vector<SubGraph> _candidates;
 
-	vector<OneMatch> _matches;
+	OneMatch _oneMatch;		//一对subgraph的match纪录
+	vector<OneMatch> _matches;//所有的match对
 	
 public:
 
 	void initMatching(SubGraph& target,vector<SubGraph>& candidates);//初始化匹配参数 匹配精度
-	void subGraphMatching(vector<OneMatch>& matches, SubGraph& target, vector<SubGraph>& candidates);
-	void oneSubGraphMatching(OneMatch& match, SubGraph& target, SubGraph& candidate);
+	void initMatching(SubGraph& target,SubGraph& candidates);
+	void subGraphMatching(SubGraph& target, vector<SubGraph>& candidates);
+	void oneSubGraphMatching(SubGraph& target, SubGraph& candidate);
 	double disOfTwoNodes(FacNode& node1, FacNode& node2);
 	GraphMatching(void);
 	~GraphMatching(void);

@@ -33,3 +33,7 @@ double calcAngleOf2Vec(Point& vec1,Point& vec2){
 	double cos_theta = (vec1.x * vec2.x + vec1.y * vec2.y) / (distanceP2P(Point(0,0),vec1) * distanceP2P(Point(0,0),vec2));
 	return cos_theta;
 }
+
+Point getGravityCenter(vector<Point>& contour){
+	return calcCenterPoint(contour);
+}

@@ -11,7 +11,7 @@ DP::~DP(void)
 	_path.clear();
 }
 
-DP::DP(int** distance, int rows,int cols){
+DP::DP(double** distance, int rows,int cols){
 	_rows = rows;
 	_cols = cols;
 	for(int i=0;i<rows;i++)
@@ -34,7 +34,7 @@ void DP::printMatrix(int rows,int cols){
 	cout<<endl;		
 }
 
-int DP::MinMatrix(int i,int j)
+double DP::MinMatrix(int i,int j)
 {
     if(i == -1 && j == -1) return 0;
 	if(i == -1 && j != -1) return INF_EDGE;
@@ -43,15 +43,15 @@ int DP::MinMatrix(int i,int j)
     if(_matrix_min[i][j] == -1)
     {
         //int min_matrix1=MinMatrix((i-1+_rows)%_rows,j+1);
-        int min_matrix2=MinMatrix(i,j-1);//往右走
-        int min_matrix3=MinMatrix(i-1,j-1);//右下
+        double min_matrix2=MinMatrix(i,j-1);//往右走
+        double min_matrix3=MinMatrix(i-1,j-1);//右下
 
 		//int min_matrix4=MinMatrix(i+1,(j-1+_columns)%_columns);
-        int min_matrix5=MinMatrix(i-1,j);//往下走
+        double min_matrix5=MinMatrix(i-1,j);//往下走
       //  int min_matrix6=MinMatrix(i+1,(j+1+_columns)%_columns);//右下  等价min_matrix3
 
         //row
-		int temp_min = min_matrix2;
+		double temp_min = min_matrix2;
        /* _matrix_row[i][j] = (i+_rows)%_rows;
         _matrix_min[i][j]=min_matrix2+_matrix[i][j];*/
 
@@ -124,17 +124,17 @@ int DP::MinMatrix(int i,int j)
     return _matrix_min[i][j];
 }
 
-int DP::MaxMatrix(int i,int j)
+double DP::MaxMatrix(int i,int j)
 {
     if(j == _cols) return 0;
 
     if(_matrix_min[i][j] == -1)
     {
-        int min_matrix1=MinMatrix((i-1+_rows)%_rows,j+1);
-        int min_matrix2=MinMatrix((i+_rows)%_rows,j+1);
-        int min_matrix3=MinMatrix((i+1+_rows)%_rows,j+1);
+        double min_matrix1=MinMatrix((i-1+_rows)%_rows,j+1);
+        double min_matrix2=MinMatrix((i+_rows)%_rows,j+1);
+        double min_matrix3=MinMatrix((i+1+_rows)%_rows,j+1);
 
-        int temp_min = min_matrix1;
+        double temp_min = min_matrix1;
         _matrix_row[i][j] = (i-1+_rows)%_rows;
         _matrix_min[i][j]=min_matrix1+_matrix[i][j];
 
@@ -173,13 +173,13 @@ void DP::performDP(){
 	}
 
 
-	int rsum = 0;
+	double rsum = 0;
 	int rentry = -1;
 	rsum = MinMatrix(0,_cols-1);
 	rentry = 0;
 	//printMatrix(_rows,_cols);
 	for(i=0;i<_rows;i++){
-		int temp = MinMatrix(i,_cols-1);//最右边的出口
+		double temp = MinMatrix(i,_cols-1);//最右边的出口
 		//printMatrix(_rows,_cols);
 		if(temp < rsum)
 		{
@@ -188,7 +188,7 @@ void DP::performDP(){
 		}
 	}
 
-	int csum = 0;
+	double csum = 0;
 	int centry = -1;
 	csum = MinMatrix(_rows-1,0);
 	centry = 0;

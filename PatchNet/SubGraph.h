@@ -12,7 +12,7 @@ private:
 
 public:
 
-	void drawSubGraph(Mat& src);
+	void drawSubGraph(Mat& src,string title);
 	void reorganizeGraph();//organize subgraph according to the angle to centerNode
 
 	SubGraph(void);

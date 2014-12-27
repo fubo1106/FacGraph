@@ -35,3 +35,5 @@ Scalar randColor();
 double distanceP2P(const Point& p1,const Point& p2);
 
 double calcAngleOf2Vec(Point& vec1,Point& vec2);
+
+Point getGravityCenter(vector<Point>& contour);

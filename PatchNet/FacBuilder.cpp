@@ -181,3 +181,12 @@ void FacBuilder::buildSubGraph(FacNode& node, FacGraph& facGraph){
 		
 	}
 }
+
+void FacBuilder::buildAllSubGraphes(FacGraph& facGraph){
+	
+	for(int i=0;i<facGraph._nodes.size();i++){
+		buildSubGraph(facGraph._nodes[i],facGraph);
+		_allSubGraphes.push_back(_subGraph);
+		_subGraph._edges.clear();
+	}
+}

@@ -10,6 +10,17 @@ GraphMatching::~GraphMatching(void)
 {
 }
 
+void GraphMatching::initMatching(SubGraph& target, SubGraph& candidate){
+	_thrsAreaRatio = 0.05;//threshold for ..
+	_threPosition = 0.1;
+	_threAvggray = 0.2;
+	_threWslashH = 0.2;
+	_threK = 5;//candidate num
+
+	_target = target;
+	_candidate = candidate;
+}
+
 void GraphMatching::initMatching(SubGraph& target, vector<SubGraph>& candidates){
 	_thrsAreaRatio = 0.05;//threshold for ..
 	_threPosition = 0.1;
@@ -19,6 +30,7 @@ void GraphMatching::initMatching(SubGraph& target, vector<SubGraph>& candidates)
 
 	_target = target;
 	_candidates = candidates;
+	_matches.resize(candidates.size());
 
 }
 
@@ -26,11 +38,9 @@ bool betterThan(OneMatch& m1, OneMatch& m2){
 	return (m1.matchScore < m2.matchScore);
 }
 
-void GraphMatching::subGraphMatching(vector<OneMatch>& matches, SubGraph& target, vector<SubGraph>& candidates){
-	target = _target;
-	candidates = _candidates;
+void GraphMatching::subGraphMatching(SubGraph& target, vector<SubGraph>& candidates){
 	
-	matches.resize(candidates.size());
+	_matches.resize(candidates.size());
 	double matchScore;
 	for(int k=0;k<candidates.size();k++){
 		//calc matchScore between target and candidat[i]
@@ -38,8 +48,8 @@ void GraphMatching::subGraphMatching(vector<OneMatch>& matches, SubGraph& target
 		double dis_Avggray;
 		double dis_WslashH;
 		
-		matches[k].targ = target;
-		matches[k].cadi = candidates[k];
+		_matches[k].targ = target;
+		_matches[k].cadi = candidates[k];
 
 		/*dis_Avggray = abs(target._centerNode._avggray - candidates[i]._centerNode._avggray);
 		dis_WslashH = abs( (target._centerNode._WslashH - candidates[i]._centerNode._WslashH) / target._centerNode._WslashH );
@@ -49,10 +59,10 @@ void GraphMatching::subGraphMatching(vector<OneMatch>& matches, SubGraph& target
 		target.reorganizeGraph();
 		candidates[k].reorganizeGraph();
 
-		int** distance,rows = target._edges.size(),cols = candidates[k]._edges.size();
-		distance = new int*[rows];
+		double** distance;int rows = target._edges.size(),cols = candidates[k]._edges.size();
+		distance = new double*[rows];
 		for(int i=0;i<rows;i++)
-			distance[i] = new int[cols];
+			distance[i] = new double[cols];
 
 		//calculate the distance of every 2 nodes from Subgraph#1 and SubGrapg#2
 		for(int i=0;i<rows;i++)
@@ -62,37 +72,40 @@ void GraphMatching::subGraphMatching(vector<OneMatch>& matches, SubGraph& target
 		DP dp(distance,rows,cols);
 		dp.performDP();
 
-		matches[k].matchScore = matchScore;
+		_matches[k].matchScore = dp._mindistance;
 		delete distance;
+		dp.~DP();
 	}//end for
 
-	sort(matches,betterThan);
+	sort(_matches,betterThan);
 }
 
-void GraphMatching::oneSubGraphMatching(OneMatch& match, SubGraph& target, SubGraph& candidate){
-		match.targ = target;
-		match.cadi = candidate;
+void GraphMatching::oneSubGraphMatching(SubGraph& target, SubGraph& candidate){
+	
+	_oneMatch.targ = target;
+	_oneMatch.cadi = candidate;
 
-		double matchScore;
+	double matchScore;
 
-		target.reorganizeGraph();
-		candidate.reorganizeGraph();
+	target.reorganizeGraph();
+	candidate.reorganizeGraph();
 
-		int** distance,rows = target._edges.size(),cols = candidate._edges.size();
-		distance = new int*[rows];
-		for(int i=0;i<rows;i++)
-			distance[i] = new int[cols];
+	double** distance;int rows = target._edges.size(),cols = candidate._edges.size();
+	distance = new double*[rows];
+	for(int i=0;i<rows;i++)
+		distance[i] = new double[cols];
 
-		//calculate the distance of every 2 nodes from Subgraph#1 and SubGrapg#2
-		for(int i=0;i<rows;i++)
-			for(int j=0;j<cols;j++)
-				distance[i][j] = disOfTwoNodes(target._edges[i]._node2,candidate._edges[j]._node2);
+	//calculate the distance of every 2 nodes from Subgraph#1 and SubGrapg#2
+	for(int i=0;i<rows;i++)
+		for(int j=0;j<cols;j++)
+			distance[i][j] = disOfTwoNodes(target._edges[i]._node2,candidate._edges[j]._node2);
 		
-		DP dp(distance,rows,cols);
-		dp.performDP();
+	DP dp(distance,rows,cols);
+	dp.performDP();
 
-		match.matchScore = matchScore;
-		delete distance;
+	_oneMatch.matchScore = dp._mindistance;
+	delete distance;
+	dp.~DP();
 }
 
 double GraphMatching::disOfTwoNodes(FacNode& node1, FacNode& node2){
