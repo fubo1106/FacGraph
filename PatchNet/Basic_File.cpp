@@ -97,7 +97,9 @@ int Basic_File::LoadData(string fileName, cv::Mat& matData, int matRows, int mat
 	return (1);
 }
 
-void readMat2LabelFile(Mat& src, string file){
+void  readMat2LabelFile( Mat& src, string file){
+
+
 	ofstream out(file,ios::out);
 
 	int d0,d1,d2,d3,d4,d5,d6;
@@ -106,8 +108,44 @@ void readMat2LabelFile(Mat& src, string file){
 
 	for(int i=0;i<src.rows;i++)
 		for(int j=0;j<src.cols;j++){
-		
+
+			//if(j==src.cols-1)
+			//	out <<"\n";
+
+			if(src.at<uchar>(i,j)>0 && src.at<uchar>(i,j)<=30)
+			{
+				out <<"0 ";
+			}
+
+			if(src.at<uchar>(i,j)>30 && src.at<uchar>(i,j)<=70)
+			{
+				out <<"1 ";
+			}
+			if(src.at<uchar>(i,j)>70 && src.at<uchar>(i,j)<=100)
+			{
+				out <<"2 ";
+			}
+
+			if(src.at<uchar>(i,j)>100 && src.at<uchar>(i,j)<=170)
+			{
+				out <<"3 ";
+			}
+
+			if(src.at<uchar>(i,j)>170 && src.at<uchar>(i,j)<=185)
+			{
+				out <<"4 ";
+			}
+			if(src.at<uchar>(i,j)>185 && src.at<uchar>(i,j)<=200)
+			{
+				out <<"5 ";
+			}
+			if(src.at<uchar>(i,j)>200 && src.at<uchar>(i,j)<=240)
+			{
+				out <<"6 ";
+			}
+
 		}
 
-	out.close();
+		out.close();
 }
+

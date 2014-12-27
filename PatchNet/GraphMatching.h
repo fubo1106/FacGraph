@@ -6,6 +6,8 @@ struct OneMatch
 	SubGraph targ;//target subgraph
 	SubGraph cadi;//matched candidate;
 
+	pair<int,int> matchedPair;//¶ÔÓ¦Æ¥ÅäµÄnode id pair
+
 	double matchScore;
 };
 
@@ -33,6 +35,6 @@ public:
 	~GraphMatching(void);
 
 private:
-	bool betterThan(OneMatch& m1,OneMatch& m2);
+	
 };
 

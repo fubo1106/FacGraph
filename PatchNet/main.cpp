@@ -3,6 +3,7 @@
 #include "Basic_File.h"
 #include "Basics.h"
 #include "GraphMatching.h"
+#include "DP.h"
 
 int main(){
 	//string imgA_path = "facades\\";
@@ -224,5 +225,9 @@ int main(){
 	}
 	GraphMatching gMatch;
 	double distance = gMatch.disOfTwoNodes(facG._nodes[0],facG._nodes[2]);
+
+	DP dp;
+	dp.dp();
+
 	return 0;
 }

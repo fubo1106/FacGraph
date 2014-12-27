@@ -22,6 +22,10 @@ void GraphMatching::initMatching(SubGraph& target, vector<SubGraph>& candidates)
 
 }
 
+bool betterThan(OneMatch& m1, OneMatch& m2){
+	return (m1.matchScore < m2.matchScore);
+}
+
 void GraphMatching::subGraphMatching(vector<OneMatch>& matches, SubGraph& target, vector<SubGraph>& candidates){
 	target = _target;
 	candidates = _candidates;
@@ -44,11 +48,7 @@ void GraphMatching::subGraphMatching(vector<OneMatch>& matches, SubGraph& target
 		matchScore = dis_AreaRatio + dis_Avggray + dis_WslashH;
 		matches[i].matchScore = matchScore;
 	}
-	//sort(matches,betterThan);
-}
-
-bool GraphMatching::betterThan(OneMatch& m1, OneMatch& m2){
-	return (m1.matchScore < m2.matchScore);
+	sort(matches,betterThan);
 }
 
 double GraphMatching::disOfTwoNodes(FacNode& node1, FacNode& node2){
