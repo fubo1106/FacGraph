@@ -8,11 +8,21 @@ DP::DP(void)
 
 DP::~DP(void)
 {
+	_path.clear();
+}
+
+DP::DP(int** distance, int rows,int cols){
+	_rows = rows;
+	_cols = cols;
+	for(int i=0;i<rows;i++)
+		for(int j=0;j<cols;j++)
+			_matrix[i][j] = distance[i][j];
 }
 
 void DP::initilize(){
 	_cols =0;//number of column or row
 	_rows = 0;
+	_path.clear();
 }
 
 void DP::printMatrix(int rows,int cols){
@@ -145,23 +155,21 @@ int DP::MaxMatrix(int i,int j)
     return _matrix_min[i][j];
 }
 
-void DP::dp(){
+void DP::performDP(){
 
-	fstream fin("matrix.txt");
-	fin>>_rows>>_cols;
+	/*fstream fin("matrix.txt");
+	fin>>_rows>>_cols;*/
 	int i,j;
 
 	//read matrix
 
-	for(i=0;i<_rows;i++)
-	{
-		for(j=0;j<_cols;j++)
-		{
-			fin>>_matrix[i][j];
+	for(i=0;i<_rows;i++){
+		for(j=0;j<_cols;j++){
+			//fin>>_matrix[i][j];
 			_matrix_min[i][j] = -1;
-			cout<<_matrix[i][j]<<" ";
+			//cout<<_matrix[i][j]<<" ";
 		}
-		cout<<endl;
+		//cout<<endl;
 	}
 
 
@@ -194,11 +202,17 @@ void DP::dp(){
 		}
 	}
 
+	pair<int,int>p;
 	if(csum < rsum){
+		_mindistance = csum;
 		cout<<"the min of the path is :"<<csum<<endl;
 		int old_row = _rows-1;
 		int old_col = centry;
 		cout<<old_row<<","<<old_col;
+
+		p.first=old_row;p.second=old_col;
+		_path.push_back(p);
+
 		for(i=0;i<_rows-1;i++)
 		{
 			int next_row = _matrix_row[old_row][old_col];
@@ -210,10 +224,15 @@ void DP::dp(){
 		cout<<endl;
 	}
 	else{
+		_mindistance = rsum;
 		cout<<"the min of the path is :"<<rsum<<endl;
 		int old_row = rentry;
 		int old_col = _cols-1;
 		cout<<old_row<<","<<old_col;
+
+		p.first=old_row;p.second=old_col;
+		_path.push_back(p);
+
 		for(i=0;i<_cols-1;i++)
 		{
 			int next_row = _matrix_row[old_row][old_col];

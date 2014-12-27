@@ -32,23 +32,67 @@ void GraphMatching::subGraphMatching(vector<OneMatch>& matches, SubGraph& target
 	
 	matches.resize(candidates.size());
 	double matchScore;
-	for(int i=0;i<candidates.size();i++){
+	for(int k=0;k<candidates.size();k++){
 		//calc matchScore between target and candidat[i]
 		double dis_AreaRatio;
 		double dis_Avggray;
 		double dis_WslashH;
 		
-		matches[i].targ = target;
-		matches[i].cadi = candidates[i];
+		matches[k].targ = target;
+		matches[k].cadi = candidates[k];
 
-		dis_Avggray = abs(target._centerNode._avggray - candidates[i]._centerNode._avggray);
+		/*dis_Avggray = abs(target._centerNode._avggray - candidates[i]._centerNode._avggray);
 		dis_WslashH = abs( (target._centerNode._WslashH - candidates[i]._centerNode._WslashH) / target._centerNode._WslashH );
 		dis_AreaRatio = target._edges.size();
 
-		matchScore = dis_AreaRatio + dis_Avggray + dis_WslashH;
-		matches[i].matchScore = matchScore;
-	}
+		matchScore = dis_AreaRatio + dis_Avggray + dis_WslashH;*/
+		target.reorganizeGraph();
+		candidates[k].reorganizeGraph();
+
+		int** distance,rows = target._edges.size(),cols = candidates[k]._edges.size();
+		distance = new int*[rows];
+		for(int i=0;i<rows;i++)
+			distance[i] = new int[cols];
+
+		//calculate the distance of every 2 nodes from Subgraph#1 and SubGrapg#2
+		for(int i=0;i<rows;i++)
+			for(int j=0;j<cols;j++)
+				distance[i][j] = disOfTwoNodes(target._edges[i]._node2,candidates[k]._edges[j]._node2);
+		
+		DP dp(distance,rows,cols);
+		dp.performDP();
+
+		matches[k].matchScore = matchScore;
+		delete distance;
+	}//end for
+
 	sort(matches,betterThan);
+}
+
+void GraphMatching::oneSubGraphMatching(OneMatch& match, SubGraph& target, SubGraph& candidate){
+		match.targ = target;
+		match.cadi = candidate;
+
+		double matchScore;
+
+		target.reorganizeGraph();
+		candidate.reorganizeGraph();
+
+		int** distance,rows = target._edges.size(),cols = candidate._edges.size();
+		distance = new int*[rows];
+		for(int i=0;i<rows;i++)
+			distance[i] = new int[cols];
+
+		//calculate the distance of every 2 nodes from Subgraph#1 and SubGrapg#2
+		for(int i=0;i<rows;i++)
+			for(int j=0;j<cols;j++)
+				distance[i][j] = disOfTwoNodes(target._edges[i]._node2,candidate._edges[j]._node2);
+		
+		DP dp(distance,rows,cols);
+		dp.performDP();
+
+		match.matchScore = matchScore;
+		delete distance;
 }
 
 double GraphMatching::disOfTwoNodes(FacNode& node1, FacNode& node2){

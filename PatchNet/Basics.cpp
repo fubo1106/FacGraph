@@ -28,3 +28,8 @@ Scalar randColor(){
 double distanceP2P(const Point& p1,const Point& p2){
 	return sqrt((p2.x-p1.x)*(p2.x-p1.x) + (p2.y-p1.y)*(p2.y-p1.y) );
 }
+
+double calcAngleOf2Vec(Point& vec1,Point& vec2){
+	double cos_theta = (vec1.x * vec2.x + vec1.y * vec2.y) / (distanceP2P(Point(0,0),vec1) * distanceP2P(Point(0,0),vec2));
+	return cos_theta;
+}

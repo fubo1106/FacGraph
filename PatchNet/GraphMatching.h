@@ -1,6 +1,6 @@
 #pragma once
 #include "SubGraph.h"
-
+#include "DP.h"
 struct OneMatch
 {
 	SubGraph targ;//target subgraph
@@ -30,6 +30,7 @@ public:
 
 	void initMatching(SubGraph& target,vector<SubGraph>& candidates);//初始化匹配参数 匹配精度
 	void subGraphMatching(vector<OneMatch>& matches, SubGraph& target, vector<SubGraph>& candidates);
+	void oneSubGraphMatching(OneMatch& match, SubGraph& target, SubGraph& candidate);
 	double disOfTwoNodes(FacNode& node1, FacNode& node2);
 	GraphMatching(void);
 	~GraphMatching(void);

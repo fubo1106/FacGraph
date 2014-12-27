@@ -227,7 +227,7 @@ int main(){
 	double distance = gMatch.disOfTwoNodes(facG._nodes[0],facG._nodes[2]);
 
 	DP dp;
-	dp.dp();
+	dp.performDP();
 
 	return 0;
 }

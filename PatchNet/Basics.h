@@ -33,3 +33,5 @@ int calcAvgGray(vector<Point>& contour, Mat& grayImg);
 Scalar randColor();
 
 double distanceP2P(const Point& p1,const Point& p2);
+
+double calcAngleOf2Vec(Point& vec1,Point& vec2);
