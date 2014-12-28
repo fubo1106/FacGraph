@@ -55,3 +55,200 @@ cv::Point getGravityCenter(vector<cv::Point>& contour){
 	return cv::Point( mu.m10/mu.m00 , mu.m01/mu.m00 );
 	//return cv::Point( mu.m01/mu.m00 , mu.m10/mu.m00 );//x y相反 代表图像中的位置
 }
+
+bool ColorImageSegmentByKMeans2 ( const   IplImage *  img ,  IplImage *  pResult, int nClusters,  int   sortFlag )
+
+{
+        assert ( img  !=  NULL &&  pResult  !=  NULL );
+
+        assert ( img -> nChannels == 3 &&  pResult -> nChannels  == 1);
+
+        int   i , j ;
+
+        CvMat * samples = cvCreateMat (( img -> width )*( img -> height ),1, CV_32FC3 ); // 创建样本矩阵， CV_32FC3 代表位浮点通道（彩色图像）
+
+        CvMat * clusters = cvCreateMat (( img -> width )*( img -> height ),1, CV_32SC1 ); // 创建类别标记矩阵， CV_32SF1 代表位整型通道
+
+        int   k =0;
+
+        for  ( i =0; i < img -> width ; i ++)
+
+       {
+
+               for ( j =0; j < img -> height ; j ++)
+
+              {
+
+                      CvScalar s ;
+
+                      // 获取图像各个像素点的三通道值（ RGB ）
+
+                      s . val [0]=( float ) cvGet2D ( img , j , i ). val [0];
+
+                      s . val [1]=( float ) cvGet2D ( img , j , i ). val [1];
+
+                      s . val [2]=( float ) cvGet2D ( img , j , i ). val [2];
+
+                      cvSet2D ( samples , k ++,0, s ); // 将像素点三通道的值按顺序排入样本矩阵
+
+              }
+
+       }
+
+		
+        cvKMeans2 ( samples , nClusters , clusters , cvTermCriteria ( CV_TERMCRIT_ITER ,20,1.0)); // 开始聚类，迭代次，终止误差 .0
+
+        k =0;
+
+        int   val =0;
+
+        float   step =255/( nClusters -1);
+
+        for  ( i =0; i < img -> width ; i ++)
+
+       {
+
+               for ( j =0; j < img -> height ; j ++)
+
+              {
+
+                      val =( int ) clusters -> data . i [ k ++];
+
+                      CvScalar s ;
+
+                      s . val [0]=255- val * step ; // 这个是将不同类别取不同的像素值，
+
+                      cvSet2D ( pResult , j , i , s );         // 将每个像素点赋值       
+
+              }
+
+       }
+
+        cvReleaseMat (& samples );
+
+        cvReleaseMat (& clusters );
+
+        return   true ;
+
+}
+
+bool GrayImageSegmentByKMeans2 ( const   IplImage *  pImg ,  IplImage * pResult , int nClusters, int sortFlag )
+
+{
+
+        assert ( pImg  !=  NULL &&  pImg -> nChannels == 1);
+
+        // 创建样本矩阵， CV_32FC1 代表位浮点通道（灰度图像）
+
+        CvMat * samples  =  cvCreateMat (( pImg -> width )* ( pImg -> height ),1,  CV_32FC1 );
+
+        // 创建类别标记矩阵， CV_32SF1 代表位整型通道
+
+        CvMat * clusters  =  cvCreateMat (( pImg -> width )* ( pImg -> height ),1,  CV_32SC1 );
+
+        // 创建类别中心矩阵
+
+        CvMat * centers  =  cvCreateMat ( nClusters , 1,  CV_32FC1 );
+
+        //  将原始图像转换到样本矩阵
+
+       {
+
+               int k  = 0;
+
+               CvScalar s ;
+
+               for ( int   i  = 0;  i  <  pImg -> width ;  i ++)
+
+              {
+
+                      for ( int   j =0; j  <  pImg -> height ;  j ++)
+
+                     {
+
+                             s . val [0] = ( float ) cvGet2D ( pImg ,  j ,  i ). val [0];
+
+                             cvSet2D ( samples , k ++, 0,  s );
+
+                     }
+
+              }
+
+       }
+
+        // 开始聚类，迭代次，终止误差 .0
+
+       cvKMeans2 ( samples ,  nClusters , clusters ,  cvTermCriteria ( CV_TERMCRIT_ITER  +  CV_TERMCRIT_EPS ,100, 1.0), 1, 0, 0, centers );
+
+        //  无需排序直接输出时
+
+        if  ( sortFlag  == 0)
+
+       {
+
+               int k  = 0;
+
+               int val  = 0;
+
+               float step  = 255 / (( float ) nClusters  - 1);
+
+               CvScalar s ;
+
+               for ( int   i  = 0;  i  <  pImg -> width ;  i ++)
+
+              {
+
+                      for ( int   j  = 0; j  <  pImg -> height ;  j ++)
+
+                     {
+
+                             val  = ( int ) clusters -> data . i [ k ++];
+
+                             s . val [0] = 255-  val  *  step ; // 这个是将不同类别取不同的像素值，
+
+                             cvSet2D ( pResult , j ,  i ,  s );   // 将每个像素点赋值
+
+                     }
+
+              }
+
+               return true ;
+
+       }    
+}
+
+void ImageSegmentByKMeans2(cv::Mat& src,cv::Mat& dst,int nClusters, int sortFlag ){
+	IplImage srcI = src;
+
+	/*IplImage *hsv_img = cvCreateImage(cvGetSize(&src), 8 , 3);  
+	IplImage *h_img = cvCreateImage(cvGetSize(&src), 8, 1);  
+	IplImage *s_img = cvCreateImage(cvGetSize(&src), 8, 1);  
+	IplImage *v_img = cvCreateImage(cvGetSize(&src), 8, 1);  */
+
+	//IplImage* src = cvLoadImage(name,1);
+	IplImage* dstI = cvCreateImage(cvGetSize(&srcI), 8, 1);
+	
+	if(src.channels() == 3)
+		ColorImageSegmentByKMeans2(&srcI,dstI,nClusters,sortFlag);
+	else
+		GrayImageSegmentByKMeans2(&srcI,dstI,nClusters,sortFlag);
+
+	cv::Mat mtx(dstI);
+	mtx.copyTo(dst);
+	//imshow("d",dst);waitKey(0);
+	cvReleaseImage(&dstI);
+
+	return;
+}
+
+void maskProcess(Mat& src,Mat& mask){
+
+	if(mask.channels() != 1)
+		cvtColor(mask,mask,CV_BGR2GRAY);
+
+	for(int i=0;i<src.rows;i++)
+		for(int j=0;j<src.cols;j++){
+			if(mask.at<uchar>(i,j) != 0)
+				src.at<Vec3b>(i,j) = Vec3b(0,0,0);
+		}
+}

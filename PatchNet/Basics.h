@@ -39,3 +39,7 @@ double distanceP2P(const cv::Point& p1,const cv::Point& p2);
 double calcAngleOf2Vec(cv::Point& vec1,cv::Point& vec2);
 
 cv::Point getGravityCenter(vector<cv::Point>& contour);
+
+void ImageSegmentByKMeans2(cv::Mat& src,cv::Mat& dst,int nClusters, int sortFlag);
+
+void maskProcess(Mat& src,Mat& mask);

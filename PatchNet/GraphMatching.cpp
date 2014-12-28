@@ -78,6 +78,11 @@ void GraphMatching::subGraphMatching(SubGraph& target, vector<SubGraph>& candida
 	}//end for
 
 	sort(_matches,betterThan);
+
+	//find the best k matches:default k = 5
+	for(int i=0;i<_threK;i++){
+		
+	}
 }
 
 void GraphMatching::oneSubGraphMatching(SubGraph& target, SubGraph& candidate){

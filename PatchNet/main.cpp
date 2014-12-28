@@ -75,7 +75,6 @@ int main(){
 //		
 //	}
 
-
 	//explore code
 //	section = "10";
 //
@@ -209,7 +208,14 @@ int main(){
 
 //end explore	
 	Basic_File fileop;
-	Mat src = imread("1.jpg");
+	Mat src = imread("12.jpg");Mat dst;
+	Mat mask = imread("12-cut.png",0);
+	
+	maskProcess(src,mask);
+
+	ImageSegmentByKMeans2(src,dst,3,1);
+	namedWindow("cluster",0);imshow("cluster",dst);waitKey(0);
+
 	Mat region;
 	int flag = fileop.LoadData("1.txt",region,src.rows,src.cols);
 
