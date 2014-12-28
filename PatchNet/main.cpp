@@ -232,7 +232,7 @@ int main(){
 			builder._allSubGraphes[j].drawSubGraph(src.clone(),"sub#2");
 			gMatch.initMatching(sub1,sub2);
 			gMatch.oneSubGraphMatching(sub1,sub2);
-			cout<<"\nmatchScore:"<<gMatch._oneMatch.matchScore<<endl;
+			cout<<"matchScore:"<<gMatch._oneMatch.matchScore<<endl;
 		}
 	//for(int i=0;i<facG._nodes.size();i++){
 	//	

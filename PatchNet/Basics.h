@@ -26,14 +26,16 @@ using namespace std;
 //        return num;
 //}
 
-Point calcCenterPoint(vector<Point>& points);
+cv::Point calcCenterPoint(vector<cv::Point>& points);
 
-int calcAvgGray(vector<Point>& contour, Mat& grayImg);
+int calcAvgGray(vector<cv::Point>& contour,cv:: Mat& grayImg);
 
-Scalar randColor();
+cv::Vec3b calcAvgColor(vector<cv::Point>& contour, cv::Mat& coolorImg);
 
-double distanceP2P(const Point& p1,const Point& p2);
+cv::Scalar randColor();
 
-double calcAngleOf2Vec(Point& vec1,Point& vec2);
+double distanceP2P(const cv::Point& p1,const cv::Point& p2);
 
-Point getGravityCenter(vector<Point>& contour);
+double calcAngleOf2Vec(cv::Point& vec1,cv::Point& vec2);
+
+cv::Point getGravityCenter(vector<cv::Point>& contour);

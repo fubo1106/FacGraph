@@ -39,6 +39,7 @@ void FacNode::compAttributes(Mat& src){
 		 cvtColor(src,gray,CV_BGR2GRAY);
 	}
 	_avggray = calcAvgGray(_contour,gray);
+	_avgcolor = calcAvgColor(_contour,_srcImg);
 
 	_offsetX = _position.x/_srcImg.rows;//check x y row col's correspondence
 	_offsetY = _position.y/_srcImg.cols;
