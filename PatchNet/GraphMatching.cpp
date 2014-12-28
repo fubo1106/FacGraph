@@ -117,13 +117,12 @@ double GraphMatching::disOfTwoNodes(FacNode& node1, FacNode& node2){
 	double weight_avgcolor = 1;
 
 	double areaRatio1 = node1._AreaRatio,	areaRatio2 = node2._AreaRatio;
-	Point position1 = node1._position,		position2 = node2._position;//用偏移比例代替了
+	Point position1 = node1._position,		position2 = node2._position;//用偏移代替
 	double offsetX1 = node1._offsetX,		offsetX2 = node2._offsetX;
 	double offsetY1 = node1._offsetY,		offsetY2 = node2._offsetY;
 	Rect box1 = node1._box,					box2 = node2._box;	//region的box
 	double WslashH1 = node1._WslashH,		WslashH2 = node2._WslashH; //BOX的宽高比
 	Point rel_Wall1,						rel_Wall2;//relation with the wall 
-	Vec3b avgcolor1,	avgcolor2;
 	int avggray1 = node1._avggray,			avggray2 = node2._avggray;
 	Vec3b avgcolor1 = node1._avgcolor,		avgcolor2 = node2._avgcolor;
 	//normalize to 0-1
