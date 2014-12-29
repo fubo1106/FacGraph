@@ -96,7 +96,7 @@ bool ColorImageSegmentByKMeans2 ( const   IplImage *  img ,  IplImage *  pResult
        }
 
 		
-        cvKMeans2 ( samples , nClusters , clusters , cvTermCriteria ( CV_TERMCRIT_ITER ,20,1.0)); // 开始聚类，迭代次，终止误差 .0
+        cvKMeans2 ( samples , nClusters , clusters , cvTermCriteria ( CV_TERMCRIT_ITER ,50,1.0)); // 开始聚类，迭代次，终止误差 .0
 
         k =0;
 
@@ -178,7 +178,7 @@ bool GrayImageSegmentByKMeans2 ( const   IplImage *  pImg ,  IplImage * pResult 
 
         // 开始聚类，迭代次，终止误差 .0
 
-       cvKMeans2 ( samples ,  nClusters , clusters ,  cvTermCriteria ( CV_TERMCRIT_ITER  +  CV_TERMCRIT_EPS ,100, 1.0), 1, 0, 0, centers );
+       cvKMeans2 ( samples ,  nClusters , clusters ,  cvTermCriteria ( CV_TERMCRIT_ITER  +  CV_TERMCRIT_EPS ,50, 1.0), 1, 0, 0, centers );
 
         //  无需排序直接输出时
 
@@ -251,4 +251,45 @@ void maskProcess(Mat& src,Mat& mask){
 			if(mask.at<uchar>(i,j) != 0)
 				src.at<Vec3b>(i,j) = Vec3b(0,0,0);
 		}
+}
+
+void ImageSefmentByMeanshift(cv::Mat& src,cv::Mat& dst){
+	//#ifndef SPATIAL_RAD
+	//	#define SPATIAL_RAD 10
+	//#endif
+	//#ifndef COLOR_RAD
+	//	#define COLOR_RAD 10
+	//#endif
+	//#ifndef MAX_PRY_LEVEL
+	//	#define MAX_PRY_LEVEL 3
+	//#endif
+	int spatialRad = 10;
+	int colorRad = 10;
+	int maxPryLevel = 1;
+
+    //调用meanshift图像金字塔进行分割
+	pyrMeanShiftFiltering(src,dst,spatialRad,colorRad,maxPryLevel);
+	
+	RNG rng=theRNG();
+    Mat mask(dst.rows+2,dst.cols+2,CV_8UC1,Scalar::all(0));
+    for(int i=0;i<dst.rows;i++)    //opencv图像等矩阵也是基于0索引的
+        for(int j=0;j<dst.cols;j++)
+            if(mask.at<uchar>(i+1,j+1)==0)
+            {
+                Scalar newcolor(rng(256),rng(256),rng(256));
+                floodFill(dst,mask,Point(j,i),newcolor,0,Scalar::all(1),Scalar::all(1));
+        //        floodFill(dst,mask,Point(i,j),newcolor,0,colorDiff,colorDiff);
+            }
+
+	imshow("src",src);
+	imshow("dst",dst);waitKey(0);
+
+	/*createTrackbar("spatialRad","dst",&spatialRad,80,meanshift_seg);
+    createTrackbar("colorRad","dst",&colorRad,60,meanshift_seg);
+    createTrackbar("maxPryLevel","dst",&maxPryLevel,5,meanshift_seg);
+
+	imshow("src",src_S);
+    imshow("dst",dst_S);
+	waitKey();*/
+	
 }

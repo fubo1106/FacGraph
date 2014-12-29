@@ -26,6 +26,10 @@ using namespace std;
 //        return num;
 //}
 
+//variables definition
+//for Mean shift
+//end for meanshift
+
 cv::Point calcCenterPoint(vector<cv::Point>& points);
 
 int calcAvgGray(vector<cv::Point>& contour,cv:: Mat& grayImg);
@@ -43,3 +47,5 @@ cv::Point getGravityCenter(vector<cv::Point>& contour);
 void ImageSegmentByKMeans2(cv::Mat& src,cv::Mat& dst,int nClusters, int sortFlag);
 
 void maskProcess(Mat& src,Mat& mask);
+
+void ImageSefmentByMeanshift(cv::Mat& src,cv::Mat& dst);

@@ -208,13 +208,18 @@ int main(){
 
 //end explore	
 	Basic_File fileop;
-	Mat src = imread("12.jpg");Mat dst;
-	Mat mask = imread("12-cut.png",0);
+	Mat src = imread("11.jpg");Mat dst;
+	Mat mask = imread("11-cut.png",0);
+	Mat edge;
 	
 	maskProcess(src,mask);
-
-	ImageSegmentByKMeans2(src,dst,3,1);
+	Canny(src,edge,50,100);
+	ImageSegmentByKMeans2(src.clone(),dst,4,1);
 	namedWindow("cluster",0);imshow("cluster",dst);waitKey(0);
+	namedWindow("edge",0);imshow("edge",edge);waitKey(0);
+	imwrite("dst12.jpg",dst);
+
+	ImageSefmentByMeanshift(src,dst);
 
 	Mat region;
 	int flag = fileop.LoadData("1.txt",region,src.rows,src.cols);
