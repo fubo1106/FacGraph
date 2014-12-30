@@ -11,8 +11,9 @@ public:
 	SubGraph _subGraph;//为某一个node builder subgraph
 	vector<SubGraph> _allSubGraphes;//每一个node构建Subgraph的vector
 public:
-
+	void build(string srcDir, string regionDir);
 	void buildGraph(Mat& img, Mat& region);
+	void buildGraph(string imgpath, string regpath);
 	void buildSubGraph(FacNode& node, FacGraph& facGraph);
 	void buildAllSubGraphes(FacGraph& facGraph);
 	Mat getRegionFromImg(Mat& img);

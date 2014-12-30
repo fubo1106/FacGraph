@@ -16,6 +16,42 @@ FacBuilder::FacBuilder(FacGraph g){
 	_facGraph = g;
 }
 
+void FacBuilder::build(string srcDir, string regionDir){
+	//if(!boost::filesystem::exists(srcDir) || !boost::filesystem::exists(regionDir)){
+	//	cout<<"src or region directory not exists";
+	//	return;
+	//}
+	//
+	//fs::path fullpath(srcDir, fs::native);
+	//cout << "=======> Start comp node in folder: " << srcDir <<endl;
+	//if(!fs::exists(fullpath)) return; 
+
+	//fs::recursive_directory_iterator end_iter;
+	//for (fs::recursive_directory_iterator iter(fullpath); iter!=end_iter; iter++)
+	//{
+	//	if(!fs::is_directory(*iter)){
+	//		cout << "current image" << iter->path().string() << endl;
+	//		string currentImagePath = iter->path().string();
+	//		string currentImageS = iter->path().filename().string();
+	//		string currentImageBase = currentImageS.substr(0, currentImageS.find_first_of('.'));
+	//		if(currentImageBase == string(_ne_section))
+	//			continue;
+	//		if(iter->path().extension() == string(".jpg") || 
+	//			iter->path().extension() == string(".png")
+	//			)
+	//			cout << "current _ne_section: " << currentImageBase  << "-" << iter->path().filename().string()<< endl;
+
+	////		oneCompPatRes(currentImageBase, outdirS, currentImagePath);
+	//	//	oneFindRegionRes(currentImageBase, outdirS, resSaveDirS, currentImagePath);
+	//		cout << "end of one image" << endl;
+	//	}
+	//}
+	//cout << "##############Run here###################" << endl;
+	//}
+
+
+}
+
 void FacBuilder::buildGraph(Mat& img, Mat& region){
 	FacGraph g;
 
@@ -52,6 +88,14 @@ void FacBuilder::buildGraph(Mat& img, Mat& region){
 
 }
 
+void FacBuilder::buildGraph(string imgPath, string regPath){
+	Mat src = imread(imgPath);
+	Mat reg;
+	Basic_File fileop;
+	int flag = fileop.LoadData(regPath,reg,src.rows,src.cols);
+	buildGraph(src,reg);
+}
+
 Mat FacBuilder::getRegionFromImg(Mat& img){
 	Mat region;
 	return region;
@@ -78,6 +122,7 @@ vector<FacNode> FacBuilder::getNodesFromImg(Mat& img, Mat& region){
 	//vector<Point> contour;
 	FacNode node;
 	int id=0;
+	bool first = true;//假定（0,0）为墙面，第一个region是墙面，不考虑在内
 	for(int i=0;i<region.rows;i++)
 		for(int j=0;j<region.cols;j++){
 
@@ -123,8 +168,12 @@ vector<FacNode> FacBuilder::getNodesFromImg(Mat& img, Mat& region){
 				//area of this node to choos删掉细长  area小的:会出问题  用contour的像素点
 				//cout<<"area:"<<contourArea(node._contour)<<"  boundRect:"<<boundingRect(node._contour).height<<"  "<<boundingRect(node._contour).width<<endl;
 				if( node._contour.size() > 100 && boundingRect(node._contour).height > 5 && boundingRect(node._contour).width > 5){
-					nodes.push_back(node);
-					id++;
+					if(!first){//墙面不考虑
+						nodes.push_back(node);
+						id++;
+					}
+					else
+						first = false;
 				}
 				node._contour.clear();	 
 			}

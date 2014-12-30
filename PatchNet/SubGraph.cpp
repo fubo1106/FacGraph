@@ -32,7 +32,7 @@ void SubGraph::drawSubGraph(Mat& src,string title){
 	}
 	for(int i=0;i<_edges.size();i++){
 		_edge.drawEdge(_edges[i],show,Scalar(0,0,255));
-		namedWindow(title,0);imshow(title,show);waitKey(0);
+		namedWindow(title,0);imshow(title,show);//waitKey(0);
 	}
 	
 }

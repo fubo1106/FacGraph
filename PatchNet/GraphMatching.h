@@ -1,5 +1,6 @@
 #pragma once
 #include "SubGraph.h"
+#include "FacBuilder.h"
 #include "DP.h"
 struct OneMatch
 {
@@ -32,7 +33,8 @@ public:
 
 	void initMatching(SubGraph& target,vector<SubGraph>& candidates);//初始化匹配参数 匹配精度
 	void initMatching(SubGraph& target,SubGraph& candidates);
-	void subGraphMatching(SubGraph& target, vector<SubGraph>& candidates);
+	void doMatchingOfAfolder(string section, string srcDir, string regionDir);
+	void subGraphMatching(vector<OneMatch>& matches, SubGraph& target, vector<SubGraph>& candidates);
 	void oneSubGraphMatching(SubGraph& target, SubGraph& candidate);
 	double disOfTwoNodes(FacNode& node1, FacNode& node2);
 	GraphMatching(void);

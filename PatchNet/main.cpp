@@ -208,27 +208,29 @@ int main(){
 
 //end explore	
 	Basic_File fileop;
-	Mat src = imread("11.jpg");Mat dst;
+	Mat src = imread("FacGraph-src\\11.jpg");Mat dst;
 	Mat mask = imread("11-cut.png",0);
 	Mat edge;
 	
-	maskProcess(src,mask);
+	/*maskProcess(src,mask);
 	Canny(src,edge,50,100);
 	ImageSegmentByKMeans2(src.clone(),dst,4,1);
 	namedWindow("cluster",0);imshow("cluster",dst);waitKey(0);
 	namedWindow("edge",0);imshow("edge",edge);waitKey(0);
 	imwrite("dst12.jpg",dst);
 
-	ImageSefmentByMeanshift(src,dst);
+	ImageSefmentByMeanshift(src,dst);*/
 
 	Mat region;
-	int flag = fileop.LoadData("1.txt",region,src.rows,src.cols);
+	int flag = fileop.LoadData("FacGraph-region\\11-label.txt",region,src.rows,src.cols);
 
 	FacBuilder builder;
 	GraphMatching gMatch;
 
+	gMatch.doMatchingOfAfolder("11","FacGraph-src","FacGraph-region");
+
 	//builder.getNodesFromImg(src,region);
-	builder.buildGraph(src,region);
+	/*builder.buildGraph(src,region);
 
 	FacGraph facG= builder._facGraph;
 
@@ -244,7 +246,7 @@ int main(){
 			gMatch.initMatching(sub1,sub2);
 			gMatch.oneSubGraphMatching(sub1,sub2);
 			cout<<"matchScore:"<<gMatch._oneMatch.matchScore<<endl;
-		}
+		}*/
 	//for(int i=0;i<facG._nodes.size();i++){
 	//	
 	//	builder.buildSubGraph(facG._nodes[i],facG);
@@ -253,7 +255,7 @@ int main(){
 	//	builder.~FacBuilder();
 	//}
 	
-	double distance = gMatch.disOfTwoNodes(facG._nodes[0],facG._nodes[2]);
+//	double distance = gMatch.disOfTwoNodes(facG._nodes[0],facG._nodes[2]);
 
 	/*DP dp;
 	dp.performDP();*/

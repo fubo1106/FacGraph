@@ -31,8 +31,8 @@ void FacNode::compAttributes(Mat& src){
 	_AreaRatio = contourArea(_contour)/(src.rows*src.cols);
 	_box = boundingRect(_contour);
 	_WslashH = _box.width/_box.height;
-	//_position = calcCenterPoint(_contour);
-	_position = getGravityCenter(_contour);
+	_position = calcCenterPoint(_contour);
+	//_position = getGravityCenter(_contour);
 
 	Mat gray;
 	if(src.channels() == 3){

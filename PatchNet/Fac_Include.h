@@ -47,3 +47,8 @@ using namespace cv;
 #pragma comment(lib, cvLIB("flann"))
 #pragma comment(lib, cvLIB("nonfree"))
 #pragma comment(lib, cvLIB("objdetect"))
+
+//boost
+#include <boost\lexical_cast.hpp>
+#include <boost\filesystem.hpp>
+namespace fs = boost::filesystem;
