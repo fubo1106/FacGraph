@@ -208,7 +208,7 @@ int main(){
 
 //end explore	
 	Basic_File fileop;
-	Mat src = imread("FacGraph-src\\11.jpg");Mat dst;
+	Mat src = imread("FacGraph-src\\img-8-depth.png");Mat dst;
 	Mat mask = imread("11-cut.png",0);
 	Mat edge;
 	
@@ -222,12 +222,12 @@ int main(){
 	ImageSefmentByMeanshift(src,dst);*/
 
 	Mat region;
-	int flag = fileop.LoadData("FacGraph-region\\11-label.txt",region,src.rows,src.cols);
+	int flag = fileop.LoadData("FacGraph-region\\img-8-depth-label.txt",region,src.rows,src.cols);
 
 	FacBuilder builder;
 	GraphMatching gMatch;
 
-	gMatch.doMatchingOfAfolder("11","FacGraph-src","FacGraph-region");
+	gMatch.doMatching("img-8-depth","FacGraph-src","FacGraph-region","FacGraph-depth");
 
 	//builder.getNodesFromImg(src,region);
 	/*builder.buildGraph(src,region);

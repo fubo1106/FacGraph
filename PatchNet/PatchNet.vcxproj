@@ -80,6 +80,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>opencv_core246.lib;opencv_highgui246.lib;opencv_video246.lib;opencv_ml246.lib;opencv_legacy246.lib;opencv_photo246.lib;opencv_features2d246.lib;opencv_nonfree246.lib;opencv_imgproc246.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <StackReserveSize>102400000</StackReserveSize>
+      <StackCommitSize>102400000</StackCommitSize>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

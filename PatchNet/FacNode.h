@@ -4,7 +4,7 @@
 class FacNode
 {
 public:
-	
+	string _section;
 	int _ID;
 	int _cluster;//
 	double _AreaRatio;

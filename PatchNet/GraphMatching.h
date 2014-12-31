@@ -33,10 +33,12 @@ public:
 
 	void initMatching(SubGraph& target,vector<SubGraph>& candidates);//初始化匹配参数 匹配精度
 	void initMatching(SubGraph& target,SubGraph& candidates);
-	void doMatchingOfAfolder(string section, string srcDir, string regionDir);
+	void doMatching(string section, string srcDir, string regionDir,string depthDir);
+	void doMatchingOfARegion(OneMatch& matches, string section, SubGraph& sub, string srcDir, string regionDir);
 	void subGraphMatching(vector<OneMatch>& matches, SubGraph& target, vector<SubGraph>& candidates);
 	void oneSubGraphMatching(SubGraph& target, SubGraph& candidate);
 	double disOfTwoNodes(FacNode& node1, FacNode& node2);
+	void depthTransfer(Mat& result, OneMatch& oneMatch, string depthDir);
 	GraphMatching(void);
 	~GraphMatching(void);
 

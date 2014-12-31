@@ -219,7 +219,7 @@ void DP::performDP(){
 			int next_col = _matrix_col[old_row][old_col];
 			old_row = next_row;
 			old_col = next_col;
-			cout<<"->"<<next_row<<","<<next_col;
+			cout<<"<-"<<next_row<<","<<next_col;
 		}
 		cout<<endl;
 	}

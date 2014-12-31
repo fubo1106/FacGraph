@@ -22,8 +22,8 @@ bool lessThan(FacEdge& e1,FacEdge& e2){
 	return acos(calcAngleOf2Vec(v1,Point(1,0))) < acos(calcAngleOf2Vec(v2,Point(1,0)));
 }
 
-void SubGraph::drawSubGraph(Mat& src,string title){
-	Mat show = src.clone();
+void SubGraph::drawSubGraph(Mat& show,string title){
+	//Mat show = src.clone();
 	for(int i=0;i<_edges.size();i++){
 		_node.drawNode(_edges[i]._node1,show,Scalar(255,0,0));
 		_node.drawNode(_edges[i]._node2,show,randColor());

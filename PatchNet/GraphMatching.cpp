@@ -40,16 +40,17 @@ bool betterThan(OneMatch& m1, OneMatch& m2){
 
 void GraphMatching::subGraphMatching(vector<OneMatch>& matches, SubGraph& target, vector<SubGraph>& candidates){
 
-	matches.clear();
-	matches.resize(candidates.size());
+	OneMatch match;
+	//matches.resize(candidates.size());
 	double matchScore;
 	for(int k=0;k<candidates.size();k++){
 
 		oneSubGraphMatching(target,candidates[k]);
 
-		matches[k].targ = target;
-		matches[k].cadi = candidates[k];
-		matches[k].matchScore = _oneMatch.matchScore;
+		match.targ = target;
+		match.cadi = candidates[k];
+		match.matchScore = _oneMatch.matchScore;
+		matches.push_back(match);
 		////calc matchScore between target and candidat[i]
 		//double dis_AreaRatio;
 		//double dis_Avggray;
@@ -93,15 +94,49 @@ void GraphMatching::subGraphMatching(vector<OneMatch>& matches, SubGraph& target
 	}*/
 }
 
-void GraphMatching::doMatchingOfAfolder(string section, string srcDir, string regionDir){
-	string testPath = srcDir+"\\"+section+".jpg";
-	string testReg = regionDir+"\\"+section+"-label.txt";
+void GraphMatching::doMatching(string section, string srcDir, string regionDir, string depthDir){
+	
 	FacBuilder builder1;
+	vector<OneMatch> bestmatches;//test image的每个reigon对应的best match
+	OneMatch bestOneMatch;
+	builder1.buildGraph(section,srcDir,regionDir);
+	builder1.buildAllSubGraphes(builder1._facGraph);
+
+	Mat testReg,matchedReg;
+	testReg = builder1._allSubGraphes[0]._centerNode._srcImg.clone();
+	Mat depthResult = Mat::zeros(testReg.rows,testReg.cols,CV_8UC1);
+
+	for(int i=0;i<builder1._allSubGraphes.size();i++){//为每一个testImage的subgraph找到最优的subgraph匹配
+		doMatchingOfARegion(bestOneMatch,section,builder1._allSubGraphes[i],srcDir,regionDir);
+		bestmatches.push_back(bestOneMatch);
+
+		testReg = builder1._allSubGraphes[i]._centerNode._srcImg.clone();
+		matchedReg = bestOneMatch.cadi._centerNode._srcImg.clone();
+
+		builder1._allSubGraphes[i].drawSubGraph(testReg,"sub");
+		bestOneMatch.cadi.drawSubGraph(matchedReg,"matched");
+
+		imwrite("FacGraph-output\\" + boost::lexical_cast<string>(i) + "-region.jpg",testReg);
+		imwrite("FacGraph-output\\" + boost::lexical_cast<string>(i) + "-matched.jpg",matchedReg);
+
+		depthTransfer(depthResult,bestOneMatch,depthDir);
+
+	}
+	namedWindow("final-depResult",0);imshow("final-depResult",depthResult);waitKey(0);
+	imwrite("FacGraph-output\\depthtransfer.jpg",depthResult);
+	//bestmatches: test image的每个region 去 training set retrieve出的 best matched region
+
+}
+
+void GraphMatching::doMatchingOfARegion(OneMatch& bestmatch, string section, SubGraph& sub, string srcDir, string regionDir){
+	/*string testPath = srcDir+"\\"+section+".jpg";
+	string testReg = regionDir+"\\"+section+"-label.txt";*/
+	//FacBuilder builder1;
 	vector<OneMatch> matches;//每一个region 和一个training image里所有region的subgraph distance按从小到大排序
 	vector<OneMatch> bestmatches;//每个traning里的best match region
 	//build for test 
-	builder1.buildGraph(testPath,testReg);
-	builder1.buildAllSubGraphes(builder1._facGraph);
+	/*builder1.buildGraph(section,testPath,testReg);
+	builder1.buildAllSubGraphes(builder1._facGraph);*/
 
 	if(!boost::filesystem::exists(srcDir) || !boost::filesystem::exists(regionDir)){
 		cout<<"src or region directory not exists";
@@ -126,24 +161,30 @@ void GraphMatching::doMatchingOfAfolder(string section, string srcDir, string re
 			if(currentImageBase == string(section))
 				continue;
 			FacBuilder builder2;
-			builder2.buildGraph(currentImagePath,currentRegPath);
+			builder2.buildGraph(currentImageBase,srcDir,regionDir);
 			builder2.buildAllSubGraphes(builder2._facGraph);
 			
-			builder1._allSubGraphes[2].drawSubGraph(builder1._allSubGraphes[2]._centerNode._srcImg.clone(),"sub#1");
+			/*Mat test = builder1._allSubGraphes[1]._centerNode._srcImg.clone();
+			builder1._allSubGraphes[1].drawSubGraph(test,"sub#1");
+			imwrite("test-region.jpg",test);*/
 			//builder2._allSubGraphes[0].drawSubGraph(builder2._allSubGraphes[0]._centerNode._srcImg.clone(),"sub#2");
 
-			subGraphMatching(matches, builder1._allSubGraphes[0],builder2._allSubGraphes);
+			subGraphMatching(matches, sub, builder2._allSubGraphes);
 			bestmatches.push_back(matches[0]);
 			builder2.~FacBuilder();
+			matches.clear();
 			
 			cout << "end of one image" << endl;
 		}
 	}
 	sort(bestmatches,betterThan);
-	for(int i=0;i<bestmatches.size();i++){
-		bestmatches[i].cadi.drawSubGraph(bestmatches[i].cadi._centerNode._srcImg.clone(),"best candidate#");
-		waitKey(0);
-	}
+	bestmatch = bestmatches[0];
+	//for(int i=0;i<bestmatches.size();i++){
+	//	Mat bestMatch = bestmatches[i].cadi._centerNode._srcImg.clone();
+	//	bestmatches[i].cadi.drawSubGraph(bestMatch,"best candidate#");
+	//	imwrite("bestMatch"+boost::lexical_cast<string>(i)+".jpg",bestMatch);
+	//	//waitKey(0);
+	//}
 
 	cout << "##############Run here###################" << endl;
 }
@@ -177,6 +218,31 @@ void GraphMatching::oneSubGraphMatching(SubGraph& target, SubGraph& candidate){
 	_oneMatch.matchScore = dp._mindistance;
 	delete distance;
 	dp.~DP();
+}
+
+void GraphMatching::depthTransfer(Mat& result, OneMatch& match, string depthDir){
+	SubGraph targ = match.targ;
+	SubGraph cadi = match.cadi;
+
+	//targ's srcImg have the same size of result
+	string section = match.cadi._centerNode._section;
+	string depthPath = depthDir + "\\" + section + ".png";
+	if(!fs::exists(depthPath)) depthPath = depthDir + "\\" + section + ".jpg";
+
+	int inferredDepth = cadi._centerNode._depth;
+	Mat depthMap = imread(depthPath,0);
+
+	for(int i=0;i<cadi._centerNode._contour.size();i++){
+			inferredDepth = depthMap.at<uchar>(cadi._centerNode._contour[i].x,cadi._centerNode._contour[i].y);
+	}
+
+	for(int i=0;i<targ._centerNode._contour.size();i++){
+		if(result.channels() == 1)
+			result.at<uchar>(targ._centerNode._contour[i].x,targ._centerNode._contour[i].y) = inferredDepth;
+		else
+			result.at<Vec3b>(targ._centerNode._contour[i].x,targ._centerNode._contour[i].y) = Vec3b(inferredDepth,inferredDepth,inferredDepth);
+	}
+
 }
 
 double GraphMatching::disOfTwoNodes(FacNode& node1, FacNode& node2){

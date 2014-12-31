@@ -52,13 +52,13 @@ void FacBuilder::build(string srcDir, string regionDir){
 
 }
 
-void FacBuilder::buildGraph(Mat& img, Mat& region){
+void FacBuilder::buildGraph(string section, Mat& img, Mat& region){
 	FacGraph g;
 
 	Mat regionmine = getRegionFromImg(img);//自己的代码wubo
 
 
-	vector<FacNode> nodes = getNodesFromImg(img,region);
+	vector<FacNode> nodes = getNodesFromImg(section,img,region);
 	vector<FacEdge> edges = getEdgesFromNodes(img,nodes);
 
 	_facGraph._nodes = nodes;
@@ -88,12 +88,24 @@ void FacBuilder::buildGraph(Mat& img, Mat& region){
 
 }
 
-void FacBuilder::buildGraph(string imgPath, string regPath){
-	Mat src = imread(imgPath);
+void FacBuilder::buildGraph(string section, string imgDir, string regDir){
+	
+	string imgPath1 = imgDir + "\\" + section + ".jpg";
+	string imgPath2 = imgDir + "\\" + section + ".png";
+	string regPath = regDir + "\\" + section + "-label.txt";
+	Mat src;
+	fs::path fullpath1(imgPath1, fs::native);
+	
+	if(fs::exists(fullpath1))
+		src = imread(imgPath1);//jpg格式
+	else
+		src = imread(imgPath2);//png格式
+
 	Mat reg;
 	Basic_File fileop;
+	
 	int flag = fileop.LoadData(regPath,reg,src.rows,src.cols);
-	buildGraph(src,reg);
+	buildGraph(section,src,reg);
 }
 
 Mat FacBuilder::getRegionFromImg(Mat& img){
@@ -101,7 +113,7 @@ Mat FacBuilder::getRegionFromImg(Mat& img){
 	return region;
 }
  
-vector<FacNode> FacBuilder::getNodesFromImg(Mat& img, Mat& region){
+vector<FacNode> FacBuilder::getNodesFromImg(string section, Mat& img, Mat& region){
 	vector<FacNode> nodes;
 
 	//get all regions from Mat:region
@@ -121,6 +133,7 @@ vector<FacNode> FacBuilder::getNodesFromImg(Mat& img, Mat& region){
 	Point seed;
 	//vector<Point> contour;
 	FacNode node;
+	node._section = section;
 	int id=0;
 	bool first = true;//假定（0,0）为墙面，第一个region是墙面，不考虑在内
 	for(int i=0;i<region.rows;i++)
