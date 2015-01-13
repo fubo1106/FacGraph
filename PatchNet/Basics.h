@@ -50,3 +50,5 @@ void ImageSegmentByKMeans2(cv::Mat& src,cv::Mat& dst,int nClusters, int sortFlag
 void maskProcess(Mat& src,Mat& mask);
 
 void ImageSefmentByMeanshift(cv::Mat& src,cv::Mat& dst);
+
+void putTextOnImg(Mat& src, string text);

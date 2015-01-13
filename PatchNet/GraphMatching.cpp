@@ -97,8 +97,9 @@ void GraphMatching::subGraphMatching(vector<OneMatch>& matches, SubGraph& target
 void GraphMatching::doMatching(string section, string srcDir, string regionDir, string depthDir){
 	
 	FacBuilder builder1;
-	vector<OneMatch> bestmatches;//test image的每个reigon对应的best match
-	OneMatch bestOneMatch;
+	vector<vector<OneMatch>> bestmatches;//test image的每个reigon对应的best match
+	vector<OneMatch> matches; //the best correspondent region from every training image
+	//OneMatch bestOneMatch;
 	builder1.buildGraph(section,srcDir,regionDir);
 	builder1.buildAllSubGraphes(builder1._facGraph);
 
@@ -107,19 +108,29 @@ void GraphMatching::doMatching(string section, string srcDir, string regionDir, 
 	Mat depthResult = Mat::zeros(testReg.rows,testReg.cols,CV_8UC1);
 
 	for(int i=0;i<builder1._allSubGraphes.size();i++){//为每一个testImage的subgraph找到最优的subgraph匹配
-		doMatchingOfARegion(bestOneMatch,section,builder1._allSubGraphes[i],srcDir,regionDir);
-		bestmatches.push_back(bestOneMatch);
-
-		testReg = builder1._allSubGraphes[i]._centerNode._srcImg.clone();
-		matchedReg = bestOneMatch.cadi._centerNode._srcImg.clone();
+	
+		//show test region
+		/*builder1._allSubGraphes[i].drawSubGraph(testReg,"testReg");
+		waitKey(0);*/
+		i=3;
+		doMatchingOfARegion(matches,section,builder1._allSubGraphes[i],srcDir,regionDir);
+		bestmatches.push_back(matches);
 
 		builder1._allSubGraphes[i].drawSubGraph(testReg,"sub");
-		bestOneMatch.cadi.drawSubGraph(matchedReg,"matched");
+		imwrite("FacGraph-output\\region-" + boost::lexical_cast<string>(i) + ".jpg",testReg);
 
-		imwrite("FacGraph-output\\" + boost::lexical_cast<string>(i) + "-region.jpg",testReg);
-		imwrite("FacGraph-output\\" + boost::lexical_cast<string>(i) + "-matched.jpg",matchedReg);
+		testReg = builder1._allSubGraphes[i]._centerNode._srcImg.clone();
+		for(int j=0;j<matches.size();j++){
+			matchedReg = matches[j].cadi._centerNode._srcImg.clone();
+			matches[j].cadi.drawSubGraph(matchedReg,"matched");
+			string s =  "score:"+boost::lexical_cast<string>(matches[j].matchScore);
+			//putText(matchedReg,boost::lexical_cast<string>(matches[j].matchScore),Point(0,0),font,1,Scalar(0,255,0),1,CV_AA);
+			putTextOnImg(matchedReg,s);
+			//putText(matchedReg, s, cvPoint(10,50),FONT_HERSHEY_SIMPLEX,0.4,Scalar(0,0,0));
+			imwrite("FacGraph-output\\region" + boost::lexical_cast<string>(i)+"-match"+ boost::lexical_cast<string>(j)+ ".jpg",matchedReg);
+		}
 
-		depthTransfer(depthResult,bestOneMatch,depthDir);
+		//depthTransfer(depthResult,bestOneMatch,depthDir);
 
 	}
 	namedWindow("final-depResult",0);imshow("final-depResult",depthResult);waitKey(0);
@@ -128,10 +139,11 @@ void GraphMatching::doMatching(string section, string srcDir, string regionDir, 
 
 }
 
-void GraphMatching::doMatchingOfARegion(OneMatch& bestmatch, string section, SubGraph& sub, string srcDir, string regionDir){
+void GraphMatching::doMatchingOfARegion(vector<OneMatch>& matchesReg, string section, SubGraph& sub, string srcDir, string regionDir){
 	/*string testPath = srcDir+"\\"+section+".jpg";
 	string testReg = regionDir+"\\"+section+"-label.txt";*/
 	//FacBuilder builder1;
+	matchesReg.clear();
 	vector<OneMatch> matches;//每一个region 和一个training image里所有region的subgraph distance按从小到大排序
 	vector<OneMatch> bestmatches;//每个traning里的best match region
 	//build for test 
@@ -170,15 +182,17 @@ void GraphMatching::doMatchingOfARegion(OneMatch& bestmatch, string section, Sub
 			//builder2._allSubGraphes[0].drawSubGraph(builder2._allSubGraphes[0]._centerNode._srcImg.clone(),"sub#2");
 
 			subGraphMatching(matches, sub, builder2._allSubGraphes);
-			bestmatches.push_back(matches[0]);
+			matchesReg.push_back(matches[0]);
+			//sub.drawSubGraph(sub._centerNode._srcImg,"testReg");
+			//imwrite("Fac-temp\\"+
 			builder2.~FacBuilder();
 			matches.clear();
 			
 			cout << "end of one image" << endl;
 		}
-	}
-	sort(bestmatches,betterThan);
-	bestmatch = bestmatches[0];
+	}                         
+	sort(matchesReg,betterThan);
+	//bestmatch = bestmatches[0];
 	//for(int i=0;i<bestmatches.size();i++){
 	//	Mat bestMatch = bestmatches[i].cadi._centerNode._srcImg.clone();
 	//	bestmatches[i].cadi.drawSubGraph(bestMatch,"best candidate#");

@@ -293,3 +293,15 @@ void ImageSefmentByMeanshift(cv::Mat& src,cv::Mat& dst){
 	waitKey();*/
 	
 }
+
+void putTextOnImg(Mat& src, string text){
+	//create a new image
+	if(src.channels() == 1)
+		cvtColor(src,src,CV_GRAY2BGR);
+	Mat show = Mat::zeros(src.rows+20,src.cols,CV_8UC3);
+	for(int i=20;i<show.rows;i++)
+		for(int j=0;j<show.cols;j++)
+			show.at<Vec3b>(i,j) = src.at<Vec3b>(i-20,j);
+	putText(show, text, cvPoint(10,10),FONT_HERSHEY_SIMPLEX,0.4,Scalar(255,255,255));
+	src = show;
+}
