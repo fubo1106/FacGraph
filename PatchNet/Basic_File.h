@@ -6,6 +6,10 @@
 #include <iterator>
 #include <vector>
 
+#ifndef PI
+#define PI 3.1416
+#endif
+
 using namespace std;
 
 class Basic_File

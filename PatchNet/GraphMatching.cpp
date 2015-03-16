@@ -99,7 +99,7 @@ void GraphMatching::doMatching(string section, string srcDir, string regionDir, 
 	FacBuilder builder1;
 	vector<vector<OneMatch>> bestmatches;//test image的每个reigon对应的best match
 	vector<OneMatch> matches; //the best correspondent region from every training image
-	//OneMatch bestOneMatch;
+	OneMatch bestOneMatch;
 	builder1.buildGraph(section,srcDir,regionDir);
 	builder1.buildAllSubGraphes(builder1._facGraph);
 
@@ -112,7 +112,7 @@ void GraphMatching::doMatching(string section, string srcDir, string regionDir, 
 		//show test region
 		/*builder1._allSubGraphes[i].drawSubGraph(testReg,"testReg");
 		waitKey(0);*/
-		i=3;
+		i=9;
 		doMatchingOfARegion(matches,section,builder1._allSubGraphes[i],srcDir,regionDir);
 		bestmatches.push_back(matches);
 
@@ -130,7 +130,7 @@ void GraphMatching::doMatching(string section, string srcDir, string regionDir, 
 			imwrite("FacGraph-output\\region" + boost::lexical_cast<string>(i)+"-match"+ boost::lexical_cast<string>(j)+ ".jpg",matchedReg);
 		}
 
-		//depthTransfer(depthResult,bestOneMatch,depthDir);
+		depthTransfer(depthResult,matches[0],depthDir);
 
 	}
 	namedWindow("final-depResult",0);imshow("final-depResult",depthResult);waitKey(0);
@@ -182,7 +182,8 @@ void GraphMatching::doMatchingOfARegion(vector<OneMatch>& matchesReg, string sec
 			//builder2._allSubGraphes[0].drawSubGraph(builder2._allSubGraphes[0]._centerNode._srcImg.clone(),"sub#2");
 
 			subGraphMatching(matches, sub, builder2._allSubGraphes);
-			matchesReg.push_back(matches[0]);
+			//if(matches[0].matchScore < 0.5)
+				matchesReg.push_back(matches[0]);
 			//sub.drawSubGraph(sub._centerNode._srcImg,"testReg");
 			//imwrite("Fac-temp\\"+
 			builder2.~FacBuilder();
@@ -215,23 +216,31 @@ void GraphMatching::oneSubGraphMatching(SubGraph& target, SubGraph& candidate){
 
 	target.reorganizeGraph();
 	candidate.reorganizeGraph();
+	int rows = target._edges.size(),cols = candidate._edges.size();
+	if(rows == cols){//candidate and target subgraph has same nodes
+		double** distance;
+		distance = new double*[rows];
+		for(int i=0;i<rows;i++)
+			distance[i] = new double[cols];
 
-	double** distance;int rows = target._edges.size(),cols = candidate._edges.size();
-	distance = new double*[rows];
-	for(int i=0;i<rows;i++)
-		distance[i] = new double[cols];
-
-	//calculate the distance of every 2 nodes from Subgraph#1 and SubGrapg#2
-	for(int i=0;i<rows;i++)
-		for(int j=0;j<cols;j++)
-			distance[i][j] = disOfTwoNodes(target._edges[i]._node2,candidate._edges[j]._node2);
+		//calculate the distance of every 2 nodes from Subgraph#1 and SubGrapg#2
+		for(int i=0;i<rows;i++)
+			for(int j=0;j<cols;j++)
+				distance[i][j] = disOfTwoNodes(target._edges[i]._node2,candidate._edges[j]._node2);
 		
-	DP dp(distance,rows,cols);
-	dp.performDP();
+		DP dp(distance,rows,cols);
+		dp.performDP();
 
-	_oneMatch.matchScore = dp._mindistance;
-	delete distance;
-	dp.~DP();
+		_oneMatch.matchScore = dp._mindistance;
+		delete distance;
+		dp.~DP();
+	}
+	if(rows == cols){//排列之后
+		_oneMatch.matchScore = PosDistOf2Subgraph(target,candidate);
+	}
+	else{
+		_oneMatch.matchScore = 10000;
+	}
 }
 
 void GraphMatching::depthTransfer(Mat& result, OneMatch& match, string depthDir){
@@ -264,8 +273,16 @@ double GraphMatching::disOfTwoNodes(FacNode& node1, FacNode& node2){
 	double weight_areaRatio = 1;
 	double weight_posiotn = 1;
 	double weight_WslashH = 1;
-	double weight_avggray = 1;
-	double weight_avgcolor = 1;
+	double weight_avggray = 0;
+	double weight_avgcolor = 0;
+
+	/*Mat src1 = imread("FacGraph-src\\img-32-depth.png");
+	node1.drawNode(node1,src1,Scalar(255,0,0));
+	imshow("src",src1);waitKey(0);
+
+	Mat src2 = imread("FacGraph-src\\14.png");
+	node2.drawNode(node2,src2,Scalar(255,0,0));
+	imshow("src2",src2);waitKey(0);*/
 
 	double areaRatio1 = node1._AreaRatio,	areaRatio2 = node2._AreaRatio;
 	Point position1 = node1._position,		position2 = node2._position;//用偏移代替
@@ -288,6 +305,50 @@ double GraphMatching::disOfTwoNodes(FacNode& node1, FacNode& node2){
 	double distance = weight_areaRatio*dis_areaRatio + weight_posiotn*(dis_offsetX+dis_offsetY)
 		+ weight_WslashH*dis_WslashH + weight_avggray*dis_avggray + weight_avgcolor * dis_avgcolor;
 	
-	return distance;;
+	return distance;
 	
+}
+
+double GraphMatching::PosDistOf2Subgraph(SubGraph& sub1, SubGraph& sub2){
+
+	sub1.reorganizeGraph();
+	sub2.reorganizeGraph();
+
+	int num1 = sub1._edges.size();
+	int num2 = sub2._edges.size();
+	double dist = 0;
+	vector<double> vec_sub1,vec_sub2;//记录中心node与adjacent nodes之间的方向vector cos thea
+	FacNode node1 = sub1._centerNode;
+	FacNode node2 = sub2._centerNode;
+
+	for(int i=0;i<sub1._edges.size();i++){
+		Point vec1 = sub1._edges[i]._node2._position - node1._position;
+		Point vec2 = sub2._edges[i]._node2._position - node1._position;
+
+		//夹角差
+		double thea1 = acos (calcAngleOf2Vec(vec1,Point(1,0)))/PI;
+		double thea2 = acos (calcAngleOf2Vec(vec2,Point(1,0)))/PI;
+
+		double posdist = distanceP2P(sub1._edges[i]._node2._position,sub2._edges[i]._node2._position)
+			/sqrt(pow(sub1._centerNode._srcImg.rows,2)+pow(sub1._centerNode._srcImg.cols,2));
+
+		dist += abs(thea1 - thea2) + posdist;
+
+		//bounding box 
+		double thresh_neighbor = 0.4;
+		dist += thresh_neighbor*abs(sub1._edges[i]._node2._WslashH - sub2._edges[i]._node2._WslashH);
+		dist += thresh_neighbor*(abs(boundingRect(sub1._edges[i]._node2._contour).width - boundingRect(sub2._edges[i]._node2._contour).width)
+				+abs(boundingRect(sub1._edges[i]._node2._contour).height - boundingRect(sub2._edges[i]._node2._contour).height))/2;
+	}
+	//distance of 2 center node
+	dist += distanceP2P(sub1._centerNode._position,sub2._centerNode._position);
+		///sqrt(pow(sub1._centerNode._srcImg.rows,2)+pow(sub1._centerNode._srcImg.cols,2));
+
+	//distance of geometry W/H
+	dist += abs(sub1._centerNode._WslashH - sub2._centerNode._WslashH);
+	//distance of geometry width&height of boundingbox
+	dist += (abs(boundingRect(sub1._centerNode._contour).width - boundingRect(sub2._centerNode._contour).width)
+			+abs(boundingRect(sub1._centerNode._contour).height - boundingRect(sub2._centerNode._contour).height))/2;
+
+	return dist;
 }

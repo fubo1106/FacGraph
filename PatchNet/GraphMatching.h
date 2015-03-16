@@ -38,6 +38,7 @@ public:
 	void subGraphMatching(vector<OneMatch>& matches, SubGraph& target, vector<SubGraph>& candidates);
 	void oneSubGraphMatching(SubGraph& target, SubGraph& candidate);
 	double disOfTwoNodes(FacNode& node1, FacNode& node2);
+	double PosDistOf2Subgraph(SubGraph& sub1, SubGraph& sub2);
 	void depthTransfer(Mat& result, OneMatch& oneMatch, string depthDir);
 	GraphMatching(void);
 	~GraphMatching(void);
