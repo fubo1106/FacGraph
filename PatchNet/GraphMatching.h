@@ -2,6 +2,10 @@
 #include "SubGraph.h"
 #include "FacBuilder.h"
 #include "DP.h"
+
+#ifndef INF
+#define INF 100000000
+#endif
 struct OneMatch
 {
 	SubGraph targ;//target subgraph

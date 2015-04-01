@@ -21,6 +21,7 @@ public:
 	Mat _srcImg;
 
 	vector<Point> _contour;
+	vector<double> _feature;
 
 public:
 	FacNode(void);
@@ -29,5 +30,9 @@ public:
 	void drawNode(FacNode& node, Mat& src, Scalar scl);
 	void compAttributes(Mat& src);
 	bool isAdjacentWith(FacNode& node2);
+
+private:
+	double calcVariance(vector<Point>& contour, string whichCoordinate);
+	vector<double> calcHistogram(vector<Point>& contour, string whichCoordinate);//4-bin
 };
 

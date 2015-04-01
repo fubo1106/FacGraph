@@ -5,9 +5,14 @@
 #include "GraphMatching.h"
 #include "DP.h"
 
-
+//#include "ConfigParser\argv.h"
 
 int main(){
+	/*ff::CommandArgSet cmd;
+	cmd.SetArg(L"-p 100 -s hello");
+	int a = cmd.Get<int>(L"p");
+	std::wstring s = cmd.Get<std::wstring>(L"s");*/
+
 	//string imgA_path = "facades\\";
 //	const string imgA_path = "D:\\Patch\\Data\\1.jpg";
 //	const string imgB_path = "D:\\Data\\Patch\\palace\\imageB.jpg";

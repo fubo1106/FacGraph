@@ -52,3 +52,7 @@ void maskProcess(Mat& src,Mat& mask);
 void ImageSefmentByMeanshift(cv::Mat& src,cv::Mat& dst);
 
 void putTextOnImg(Mat& src, string text);
+
+double variance(vector<double>& data);
+
+double EulerDistance(vector<double>& vec1, vector<double>& vec2, vector<double>& weigth);

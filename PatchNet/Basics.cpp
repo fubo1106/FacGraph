@@ -305,3 +305,41 @@ void putTextOnImg(Mat& src, string text){
 	putText(show, text, cvPoint(10,10),FONT_HERSHEY_SIMPLEX,0.4,Scalar(255,255,255));
 	src = show;
 }
+
+double variance(vector<double>& data){
+	double sum = 0;
+	double avg,v=0;
+	for(int i=0;i<data.size();i++)
+		sum+=data[i];
+	avg=sum/data.size();
+
+	for(int i=0;i<data.size();i++)
+		v+=(data[i]-avg)*(data[i]-avg);
+	v/=data.size();
+	return v;
+
+}
+
+double EulerDistance(vector<double>& v1, vector<double>& v2, vector<double>& weight=vector<double>()){
+	//weight.size() == 0
+	if(v1.size() == v2.size()){
+		if(weight.size() == 0){
+			weight.resize(v1.size());
+			for(int i=0;i<weight.size();i++)
+				weight[i]=1;
+		}
+		else
+			normalize(weight,weight,1.0,2.0,NORM_MINMAX);
+
+		double square = 0;
+		for(int i=0;i<v1.size();i++){
+			square += weight[i]*(v1[i]-v2[i])*(v1[i]-v2[i]);
+		}
+		return sqrt(square);
+	}
+	else{
+		std::cout<<"EulerDistance(): input array size unequal error"<<endl;
+		return 0;
+	}
+	
+}

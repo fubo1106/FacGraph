@@ -4,8 +4,6 @@ class FacGraph
 {
 public:
 
-	
-
 	vector<FacNode> _nodes;
 	vector<FacEdge> _edges;
 

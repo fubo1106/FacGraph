@@ -216,9 +216,10 @@ vector<FacEdge> FacBuilder::getEdgesFromNodes(Mat& img, vector<FacNode>& nodes){
 	for(int i=0;i<nodes.size()-1;i++)
 		for(int j=i+1;j<nodes.size();j++){
 			if(nodes[i].isAdjacentWith(nodes[j])){
-				edge._node1 = nodes[i];
+				FacEdge edge(nodes[i],nodes[j]);
+				/*edge._node1 = nodes[i];
 				edge._node2 = nodes[j];
-				edge._rel_direction = nodes[i]._position - nodes[j]._position;
+				edge._rel_direction = nodes[i]._position - nodes[j]._position;*/
 				edges.push_back(edge);
 			}
 		}
@@ -229,15 +230,15 @@ vector<FacEdge> FacBuilder::getEdgesFromNodes(Mat& img, vector<FacNode>& nodes){
 void FacBuilder::buildSubGraph(FacNode& node, FacGraph& facGraph){
 
 	_subGraph._centerNode = node;
-	FacEdge edge;
-	edge._node1 = node;
+	/*FacEdge edge;
+	edge._node1 = node;*/
 	for(int i=0;i<facGraph._edges.size();i++){
 		if(facGraph._edges[i]._node1._ID == node._ID){
-			edge._node2 = facGraph._edges[i]._node2;
+			FacEdge edge (node,facGraph._edges[i]._node2);
 			_subGraph._edges.push_back(edge);
 		}
 		else if(facGraph._edges[i]._node2._ID == node._ID){
-			edge._node2 = facGraph._edges[i]._node1;	
+			FacEdge edge (node,facGraph._edges[i]._node1);	
 			_subGraph._edges.push_back(edge);
 		}
 		

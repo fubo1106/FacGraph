@@ -112,7 +112,7 @@ void GraphMatching::doMatching(string section, string srcDir, string regionDir, 
 		//show test region
 		/*builder1._allSubGraphes[i].drawSubGraph(testReg,"testReg");
 		waitKey(0);*/
-		i=9;
+		//i=9;
 		doMatchingOfARegion(matches,section,builder1._allSubGraphes[i],srcDir,regionDir);
 		bestmatches.push_back(matches);
 
@@ -121,13 +121,15 @@ void GraphMatching::doMatching(string section, string srcDir, string regionDir, 
 
 		testReg = builder1._allSubGraphes[i]._centerNode._srcImg.clone();
 		for(int j=0;j<matches.size();j++){
-			matchedReg = matches[j].cadi._centerNode._srcImg.clone();
-			matches[j].cadi.drawSubGraph(matchedReg,"matched");
-			string s =  "score:"+boost::lexical_cast<string>(matches[j].matchScore);
-			//putText(matchedReg,boost::lexical_cast<string>(matches[j].matchScore),Point(0,0),font,1,Scalar(0,255,0),1,CV_AA);
-			putTextOnImg(matchedReg,s);
-			//putText(matchedReg, s, cvPoint(10,50),FONT_HERSHEY_SIMPLEX,0.4,Scalar(0,0,0));
-			imwrite("FacGraph-output\\region" + boost::lexical_cast<string>(i)+"-match"+ boost::lexical_cast<string>(j)+ ".jpg",matchedReg);
+			if(matches[j].matchScore < INF){
+				matchedReg = matches[j].cadi._centerNode._srcImg.clone();
+				matches[j].cadi.drawSubGraph(matchedReg,"matched");
+				string s =  "score:"+boost::lexical_cast<string>(matches[j].matchScore);
+				//putText(matchedReg,boost::lexical_cast<string>(matches[j].matchScore),Point(0,0),font,1,Scalar(0,255,0),1,CV_AA);
+				putTextOnImg(matchedReg,s);
+				//putText(matchedReg, s, cvPoint(10,50),FONT_HERSHEY_SIMPLEX,0.4,Scalar(0,0,0));
+				imwrite("FacGraph-output\\region" + boost::lexical_cast<string>(i)+"-match"+ boost::lexical_cast<string>(j)+ ".jpg",matchedReg);
+			}
 		}
 
 		depthTransfer(depthResult,matches[0],depthDir);
@@ -239,7 +241,7 @@ void GraphMatching::oneSubGraphMatching(SubGraph& target, SubGraph& candidate){
 		_oneMatch.matchScore = PosDistOf2Subgraph(target,candidate);
 	}
 	else{
-		_oneMatch.matchScore = 10000;
+		_oneMatch.matchScore = INF;
 	}
 }
 
@@ -269,7 +271,8 @@ void GraphMatching::depthTransfer(Mat& result, OneMatch& match, string depthDir)
 }
 
 double GraphMatching::disOfTwoNodes(FacNode& node1, FacNode& node2){
-
+	double distance;
+#if 0 //previous measure
 	double weight_areaRatio = 1;
 	double weight_posiotn = 1;
 	double weight_WslashH = 1;
@@ -302,9 +305,15 @@ double GraphMatching::disOfTwoNodes(FacNode& node1, FacNode& node2){
 	double dis_offsetY = abs(offsetY1 - offsetY2);
 	double dis_avgcolor = ( abs(avgcolor1[0]-avgcolor2[0]) + abs(avgcolor1[1]-avgcolor2[1]) + abs(avgcolor1[2]-avgcolor2[2]) ) / 3;
 
-	double distance = weight_areaRatio*dis_areaRatio + weight_posiotn*(dis_offsetX+dis_offsetY)
+	distance = weight_areaRatio*dis_areaRatio + weight_posiotn*(dis_offsetX+dis_offsetY)
 		+ weight_WslashH*dis_WslashH + weight_avggray*dis_avggray + weight_avgcolor * dis_avgcolor;
-	
+#endif 
+
+#if 1
+
+	vector<double>weight;
+	distance = EulerDistance(node1._feature,node2._feature, weight);
+#endif
 	return distance;
 	
 }
@@ -320,7 +329,7 @@ double GraphMatching::PosDistOf2Subgraph(SubGraph& sub1, SubGraph& sub2){
 	vector<double> vec_sub1,vec_sub2;//记录中心node与adjacent nodes之间的方向vector cos thea
 	FacNode node1 = sub1._centerNode;
 	FacNode node2 = sub2._centerNode;
-
+#if 0 //previous diatance measure
 	for(int i=0;i<sub1._edges.size();i++){
 		Point vec1 = sub1._edges[i]._node2._position - node1._position;
 		Point vec2 = sub2._edges[i]._node2._position - node1._position;
@@ -349,6 +358,17 @@ double GraphMatching::PosDistOf2Subgraph(SubGraph& sub1, SubGraph& sub2){
 	//distance of geometry width&height of boundingbox
 	dist += (abs(boundingRect(sub1._centerNode._contour).width - boundingRect(sub2._centerNode._contour).width)
 			+abs(boundingRect(sub1._centerNode._contour).height - boundingRect(sub2._centerNode._contour).height))/2;
+#endif
 
+#if 1
+	if(num1 != num2){
+		std::cout<<"PosDistOf2Subgraph(): 2 subgraph does not have same size"<<endl;
+		return INF;
+	}
+	for(int i=0;i<sub1._edges.size();i++){
+		dist += disOfTwoNodes(sub1._edges[i]._node2,sub2._edges[i]._node2);
+	}
+	dist += disOfTwoNodes(sub1._centerNode,sub2._centerNode);
+#endif
 	return dist;
 }
