@@ -2,6 +2,7 @@
 #include "SubGraph.h"
 #include "FacBuilder.h"
 #include "DP.h"
+#include "GcoUtil.h"
 
 #ifndef INF
 #define INF 100000000

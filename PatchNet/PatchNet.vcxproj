@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -19,13 +19,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -46,8 +46,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>D:\Program Files\boost\boost_1_55_0;D:\opencv\include;./SimpleNet;D:\opencv\include\opencv;D:\opencv\include\opencv2;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\Program Files\boost\boost_1_55_0\stage\lib;D:\opencv\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\TOOL\boost_1_56_0;D:\TOOL\opencv2.4.9\build\include;./gco-3.0;D:\TOOL\opencv2.4.9\build\include\opencv;D:\TOOL\opencv2.4.9\build\include\opencv2;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\TOOL\boost_1_56_0\stage\lib;D:\TOOL\opencv2.4.9\build\x86\vc12\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -73,13 +73,15 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <AdditionalIncludeDirectories>./eigen</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>opencv_core246.lib;opencv_highgui246.lib;opencv_video246.lib;opencv_ml246.lib;opencv_legacy246.lib;opencv_photo246.lib;opencv_features2d246.lib;opencv_nonfree246.lib;opencv_imgproc246.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_core249.lib;opencv_highgui249.lib;opencv_video249.lib;opencv_ml249.lib;opencv_legacy249.lib;comsuppw.lib;opencv_photo249.lib;opencv_features2d249.lib;opencv_nonfree249.lib;opencv_imgproc249.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <StackReserveSize>102400000</StackReserveSize>
       <StackCommitSize>102400000</StackCommitSize>
     </Link>
@@ -87,26 +89,52 @@
   <ItemGroup>
     <ClInclude Include="Basics.h" />
     <ClInclude Include="Basic_File.h" />
+    <ClInclude Include="ConfigParser\argv.h" />
+    <ClInclude Include="ConfigParser\autores.h" />
+    <ClInclude Include="ConfigParser\ConfigParser.h" />
+    <ClInclude Include="ConfigParser\err.h" />
+    <ClInclude Include="ConfigParser\ffdef.h" />
     <ClInclude Include="DP.h" />
     <ClInclude Include="FacBuilder.h" />
     <ClInclude Include="FacEdge.h" />
     <ClInclude Include="FacGraph.h" />
     <ClInclude Include="FacNode.h" />
     <ClInclude Include="Fac_Include.h" />
+    <ClInclude Include="gco-v3.0\block.h" />
+    <ClInclude Include="gco-v3.0\energy.h" />
+    <ClInclude Include="gco-v3.0\GCoptimization.h" />
+    <ClInclude Include="gco-v3.0\graph.h" />
+    <ClInclude Include="gco-v3.0\LinkedBlockList.h" />
+    <ClInclude Include="GcoUtil.h" />
     <ClInclude Include="GraphMatching.h" />
     <ClInclude Include="SubGraph.h" />
+    <ClInclude Include="type.h" />
+    <ClInclude Include="Utils\FileUtil.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Basics.cpp" />
     <ClCompile Include="Basic_File.cpp" />
+    <ClCompile Include="ConfigParser\argv.cpp" />
+    <ClCompile Include="ConfigParser\ConfigParser.cpp" />
+    <ClCompile Include="ConfigParser\err.cpp" />
     <ClCompile Include="DP.cpp" />
     <ClCompile Include="FacBuilder.cpp" />
     <ClCompile Include="FacEdge.cpp" />
     <ClCompile Include="FacGraph.cpp" />
     <ClCompile Include="FacNode.cpp" />
+    <ClCompile Include="gco-v3.0\example.cpp" />
+    <ClCompile Include="gco-v3.0\GCoptimization.cpp" />
+    <ClCompile Include="gco-v3.0\graph.cpp" />
+    <ClCompile Include="gco-v3.0\LinkedBlockList.cpp" />
+    <ClCompile Include="gco-v3.0\maxflow.cpp" />
+    <ClCompile Include="GcoUtil.cpp" />
     <ClCompile Include="GraphMatching.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SubGraph.cpp" />
+    <ClCompile Include="Utils\FileUtil.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="gco-v3.0\GCO_README.TXT" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
